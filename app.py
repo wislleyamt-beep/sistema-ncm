@@ -434,6 +434,51 @@ def get_class_trib(ncm_code):
     })
 
 
+def get_pis_cofins_aliquota_zero(ncm_clean):
+    """
+    Alíquota zero de PIS/COFINS para produtos hortícolas, frutas e ovos
+    in natura ou com processo simples de conservação (refrigeração,
+    congelamento, secagem), conforme art. 28, III da Lei nº 10.865/2004.
+
+    Abrange todo o Capítulo 7 (hortícolas/legumes/verduras) e Capítulo 8
+    (frutas), além da posição 04.07 (ovos). Não se aplica ao Capítulo 20
+    (conservas, sucos, doces e preparações), ainda que originados de
+    frutas/hortaliças, pois esses produtos já sofreram processo industrial
+    que afasta o benefício.
+    """
+    chapter = ncm_clean[:2]
+    heading = ncm_clean[:4]
+
+    if chapter in ('07', '08') or heading == '0407':
+        return {
+            'aliquota_zero': True,
+            'base_legal': 'Art. 28, III da Lei nº 10.865/2004',
+            'nota': (
+                'Alíquota zero conforme art. 28, III da Lei 10.865/2004 - '
+                'produtos hortícolas e frutas in natura'
+            ),
+        }
+    return None
+
+
+def get_icms_hortifruti_aviso(ncm_clean):
+    """
+    Aviso sobre isenção/redução de ICMS para hortifrutigranjeiros in natura.
+    Não é regra federal uniforme — varia por estado, então apenas alerta
+    o usuário em vez de zerar automaticamente a alíquota.
+    """
+    chapter = ncm_clean[:2]
+    if chapter in ('07', '08'):
+        return (
+            'Produtos hortifrutigranjeiros in natura frequentemente possuem '
+            'isenção ou redução de base de cálculo de ICMS, conforme legislação '
+            'de cada estado (geralmente com base no Convênio ICMS 44/75 e suas '
+            'alterações). Consulte a legislação estadual específica antes de '
+            'aplicar a alíquota padrão.'
+        )
+    return None
+
+
 def get_icms_piaui(ncm_clean):
     """
     Alíquota ICMS interna e ST do Piauí conforme Lei nº 8.558/2024
@@ -563,6 +608,15 @@ def get_ncm(ncm_code):
     chapter = ncm_clean[:2]
 
     is_monofasico, mono_data = get_monofasico_info(ncm_clean)
+    pis_cofins_zero = get_pis_cofins_aliquota_zero(ncm_clean)
+
+    pis_cst = "06" if pis_cofins_zero else class_trib["pis_cst"]
+    cofins_cst = "06" if pis_cofins_zero else class_trib["cofins_cst"]
+    pis_aliq_lr = 0.0 if pis_cofins_zero else 1.65
+    pis_aliq_lp = 0.0 if pis_cofins_zero else 0.65
+    cofins_aliq_lr = 0.0 if pis_cofins_zero else 7.6
+    cofins_aliq_lp = 0.0 if pis_cofins_zero else 3.0
+    nota_aliquota_zero = pis_cofins_zero["nota"] if pis_cofins_zero else None
 
     result = {
         "ncm": ncm_clean,
@@ -581,20 +635,25 @@ def get_ncm(ncm_code):
                 "regime": "TIPI - Tabela de Incidência do IPI",
             },
             "pis": {
-                "lucro_real": {"aliquota": 1.65, "cst": class_trib["pis_cst"]},
-                "lucro_presumido": {"aliquota": 0.65, "cst": class_trib["pis_cst"]},
+                "lucro_real": {"aliquota": pis_aliq_lr, "cst": pis_cst},
+                "lucro_presumido": {"aliquota": pis_aliq_lp, "cst": pis_cst},
                 "monofasico": is_monofasico,
+                "aliquota_zero": bool(pis_cofins_zero),
+                "nota_aliquota_zero": nota_aliquota_zero,
             },
             "cofins": {
-                "lucro_real": {"aliquota": 7.6, "cst": class_trib["cofins_cst"]},
-                "lucro_presumido": {"aliquota": 3.0, "cst": class_trib["cofins_cst"]},
+                "lucro_real": {"aliquota": cofins_aliq_lr, "cst": cofins_cst},
+                "lucro_presumido": {"aliquota": cofins_aliq_lp, "cst": cofins_cst},
                 "monofasico": is_monofasico,
+                "aliquota_zero": bool(pis_cofins_zero),
+                "nota_aliquota_zero": nota_aliquota_zero,
             },
             "class_trib": class_trib["class"],
             "cst_ipi": class_trib["ipi_cst"],
         },
         "icms_estados": ICMS_STATES,
         "icms_piaui": get_icms_piaui(ncm_clean),
+        "icms_hortifruti_aviso": get_icms_hortifruti_aviso(ncm_clean),
         "monofasico": is_monofasico,
         "monofasico_dados": mono_data,
         "reforma_tributaria": get_reforma_tributaria_info(ncm_clean, is_monofasico),

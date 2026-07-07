@@ -200,6 +200,9 @@ function renderResult(d) {
   document.getElementById('pis-lp').textContent = pisLp.aliquota.toFixed(2).replace('.', ',') + '%';
   document.getElementById('pis-cst').textContent = pisLr.cst;
   toggleEl('pis-mono', d.tributacao.pis.monofasico);
+  toggleEl('pis-zero', d.tributacao.pis.aliquota_zero);
+  const pisZeroEl = document.getElementById('pis-zero');
+  if (d.tributacao.pis.aliquota_zero) pisZeroEl.textContent = '🥬 ' + d.tributacao.pis.nota_aliquota_zero;
 
   // COFINS
   const cofLr = d.tributacao.cofins.lucro_real;
@@ -208,6 +211,9 @@ function renderResult(d) {
   document.getElementById('cofins-lp').textContent = cofLp.aliquota.toFixed(2).replace('.', ',') + '%';
   document.getElementById('cofins-cst').textContent = cofLr.cst;
   toggleEl('cofins-mono', d.tributacao.cofins.monofasico);
+  toggleEl('cofins-zero', d.tributacao.cofins.aliquota_zero);
+  const cofZeroEl = document.getElementById('cofins-zero');
+  if (d.tributacao.cofins.aliquota_zero) cofZeroEl.textContent = '🥬 ' + d.tributacao.cofins.nota_aliquota_zero;
 
   // CST tables
   fillCstTable('cst-pc-saidas', CST_PIS_COFINS_SAIDAS, pisLr.cst);
@@ -220,6 +226,13 @@ function renderResult(d) {
   // ICMS por estado
   fillIcmsTable(d.icms_estados, d.icms_piaui);
   renderIcmsPI(d.icms_piaui);
+  const icmsAvisoEl = document.getElementById('icms-hortifruti-aviso');
+  if (d.icms_hortifruti_aviso) {
+    icmsAvisoEl.innerHTML = `<span style="font-size:1.1rem;line-height:1.2">⚠</span><span>${d.icms_hortifruti_aviso}</span>`;
+    icmsAvisoEl.classList.remove('hidden');
+  } else {
+    icmsAvisoEl.classList.add('hidden');
+  }
 
   // Seção CST-IBS/CBS e cClassTrib
   renderClassTribSection(d.classtrib_sugestao);

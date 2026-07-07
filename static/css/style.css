@@ -462,6 +462,31 @@ body {
   font-weight: 600;
 }
 
+.zero-tag {
+  margin-top: 10px;
+  background: var(--green-bg);
+  color: var(--green);
+  border: 1px solid var(--green-lt);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: .78rem;
+  font-weight: 600;
+}
+
+.icms-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: var(--orange-bg);
+  border: 1px solid var(--orange-lt);
+  color: var(--orange);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: .82rem;
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+
 /* ============================================================
    CST Tabs
    ============================================================ */

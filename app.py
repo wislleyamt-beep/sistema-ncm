@@ -215,12 +215,14 @@ MONOFASICOS = [
     {"ncm": "40114000", "descricao": "Pneus novos para motocicletas", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "40121100", "descricao": "Pneus recauchutados para automóveis", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
 
-    # BEBIDAS
-    {"ncm": "22011000", "descricao": "Água mineral natural", "categoria": "Bebidas", "referencia": "Lei 9.718/98 (regime especial)"},
-    {"ncm": "22019000", "descricao": "Outras águas (incluindo gelo)", "categoria": "Bebidas", "referencia": "Lei 9.718/98 (regime especial)"},
-    {"ncm": "22021000", "descricao": "Água, incl. mineral e gaseificada c/ açúcar", "categoria": "Bebidas", "referencia": "Lei 9.718/98 (regime especial)"},
-    {"ncm": "22029000", "descricao": "Outras bebidas não alcoólicas", "categoria": "Bebidas", "referencia": "Lei 9.718/98 (regime especial)"},
-    {"ncm": "22030000", "descricao": "Cervejas de malte", "categoria": "Bebidas", "referencia": "Lei 9.718/98 art. 58-A"},
+    # BEBIDAS FRIAS (água, refrigerante, cerveja — Lei 13.097/2015, art. 14)
+    {"ncm": "22011000", "descricao": "Água mineral natural", "categoria": "Bebidas Frias", "referencia": "Lei 13.097/2015, art. 14"},
+    {"ncm": "22019000", "descricao": "Outras águas (incluindo gelo)", "categoria": "Bebidas Frias", "referencia": "Lei 13.097/2015, art. 14"},
+    {"ncm": "22021000", "descricao": "Água, incl. mineral e gaseificada c/ açúcar", "categoria": "Bebidas Frias", "referencia": "Lei 13.097/2015, art. 14"},
+    {"ncm": "22029000", "descricao": "Outras bebidas não alcoólicas", "categoria": "Bebidas Frias", "referencia": "Lei 13.097/2015, art. 14"},
+    {"ncm": "22030000", "descricao": "Cervejas de malte", "categoria": "Bebidas Frias", "referencia": "Lei 13.097/2015, art. 14"},
+
+    # DEMAIS BEBIDAS (vinhos, fermentados, destilados — regime distinto, não abrangido pela Lei 13.097/2015)
     {"ncm": "22041000", "descricao": "Vinhos espumantes e champanha", "categoria": "Bebidas", "referencia": "Lei 9.718/98 (regime especial)"},
     {"ncm": "22042100", "descricao": "Vinhos em recipientes até 2L", "categoria": "Bebidas", "referencia": "Lei 9.718/98 (regime especial)"},
     {"ncm": "22042900", "descricao": "Outros vinhos em recipientes > 2L", "categoria": "Bebidas", "referencia": "Lei 9.718/98 (regime especial)"},
@@ -272,10 +274,10 @@ _MONO_CHAPTER_RULES = [
     {
         "chapter": "22",
         "headings": {"2201", "2202", "2203"},
-        "categoria": "Bebidas",
-        "referencia": "Lei 9.718/98 (regime especial)",
-        "regra_identificacao": "Monofásico por capítulo — Cap. 22 parcial (Lei 9.718/98)",
-        "descricao_padrao": "Bebida — Capítulo 22 NCM",
+        "categoria": "Bebidas Frias",
+        "referencia": "Lei 13.097/2015, art. 14",
+        "regra_identificacao": "Monofásico por posição NCM — 22.01 a 22.03 'bebidas frias' (Lei 13.097/2015)",
+        "descricao_padrao": "Bebida fria (água/refrigerante/cerveja) — posições 22.01 a 22.03",
     },
 ]
 
@@ -289,12 +291,32 @@ _MONO_HEADING_RULES = [
     },
 ]
 
+# Regras por subposição (6 dígitos) — usadas quando só uma fração da posição
+# de 4 dígitos está sujeita à regra (ex.: 21.01 mistura café, que não entra
+# no regime de bebidas frias, com chá/erva-mate, que entra).
+_MONO_SUBHEADING_RULES = [
+    {
+        "subheading": "210120",
+        "categoria": "Bebidas Frias",
+        "referencia": "Lei 13.097/2015, art. 14",
+        "regra_identificacao": "Monofásico por subposição NCM — 2101.20 (Lei 13.097/2015)",
+        "descricao_padrao": "Extrato/concentrado de chá ou erva-mate para elaboração de bebida",
+    },
+]
+
 _MONO_NCM_EXTRA = {
     "40141000": {
         "ncm": "40141000",
         "descricao": "Preservativos (artigos de borracha)",
         "categoria": "Produtos de Saúde",
         "referencia": "Lei 10.147/2000 art. 1º",
+        "regra_identificacao": "Monofásico por NCM específico",
+    },
+    "21069010": {
+        "ncm": "21069010",
+        "descricao": "Preparação composta, não alcoólica, para elaboração de bebida (concentrado/xarope para refrigerante)",
+        "categoria": "Bebidas Frias",
+        "referencia": "Lei 13.097/2015, art. 14",
         "regra_identificacao": "Monofásico por NCM específico",
     },
 }
@@ -306,7 +328,7 @@ _MONOFASICOS_IDX = {m["ncm"]: m for m in MONOFASICOS}
 def get_monofasico_info(ncm_clean):
     """
     Retorna (is_monofasico, mono_data) com campo 'regra_identificacao'.
-    Prioridade: NCM específico > NCM extra > capítulo > posição.
+    Prioridade: NCM específico > NCM extra > capítulo > posição > subposição.
     """
     # 1. NCM específico da tabela principal
     if ncm_clean in _MONOFASICOS_IDX:
@@ -344,6 +366,20 @@ def get_monofasico_info(ncm_clean):
     # 4. Regras por posição (heading)
     for rule in _MONO_HEADING_RULES:
         if heading not in rule["headings"]:
+            continue
+        return True, {
+            "ncm": ncm_clean,
+            "ncm_formatado": format_ncm(ncm_clean),
+            "descricao": rule["descricao_padrao"],
+            "categoria": rule["categoria"],
+            "referencia": rule["referencia"],
+            "regra_identificacao": rule["regra_identificacao"],
+        }
+
+    # 5. Regras por subposição (6 dígitos)
+    subheading = ncm_clean[:6]
+    for rule in _MONO_SUBHEADING_RULES:
+        if subheading != rule["subheading"]:
             continue
         return True, {
             "ncm": ncm_clean,
@@ -687,10 +723,16 @@ def get_ncm(ncm_code):
         pis_cst = cofins_cst = "06"
     elif is_monofasico:
         # CST "03" (alíquota por unidade de medida) é específico do regime de
-        # bebidas frias (Lei 13.097/2015); os demais setores monofásicos
-        # (medicamentos, perfumaria, combustíveis, veículos, autopeças,
-        # pneus) usam CST "04" (revenda a alíquota zero).
-        pis_cst = cofins_cst = "03" if chapter == "22" else "04"
+        # bebidas frias (Lei 13.097/2015) — inclui o capítulo 22 inteiro (por
+        # ora mantém vinhos/destilados no mesmo CST histórico, já que seu
+        # enquadramento não foi reauditado) e concentrados/xaropes do
+        # capítulo 21 classificados como "Bebidas Frias". Os demais setores
+        # monofásicos (medicamentos, perfumaria, combustíveis, veículos,
+        # autopeças, pneus) usam CST "04" (revenda a alíquota zero).
+        pis_cst = cofins_cst = (
+            "03" if chapter == "22" or mono_data.get("categoria") == "Bebidas Frias"
+            else "04"
+        )
     else:
         pis_cst = cofins_cst = "01"
     pis_aliq_lr = 0.0 if pis_cofins_zero else 1.65

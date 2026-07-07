@@ -106,6 +106,7 @@ MONOFASICOS = [
     {"ncm": "27112900", "descricao": "Outros gases de petróleo liquefeitos", "categoria": "Combustíveis", "referencia": "Lei 9.718/98 art. 4º"},
     {"ncm": "22071000", "descricao": "Álcool etílico não desnaturado (AEHC)", "categoria": "Combustíveis", "referencia": "Lei 9.718/98 art. 4º"},
     {"ncm": "22072000", "descricao": "Álcool etílico desnaturado (AEAC)", "categoria": "Combustíveis", "referencia": "Lei 9.718/98 art. 4º"},
+    {"ncm": "38260000", "descricao": "Biodiesel e suas misturas", "categoria": "Combustíveis", "referencia": "Lei 11.116/2005 art. 1º"},
 
     # MEDICAMENTOS
     {"ncm": "30039011", "descricao": "Medicamentos com penicilina não dosados", "categoria": "Medicamentos", "referencia": "Lei 10.147/2000 art. 1º"},
@@ -140,6 +141,9 @@ MONOFASICOS = [
     {"ncm": "33072000", "descricao": "Desodorantes corporais e antiperspirantes", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
     {"ncm": "33074100", "descricao": "Agarbatti e preparações odoríferas p/ queima", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
     {"ncm": "33079000", "descricao": "Outros produtos toucador/cosmética", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
+    {"ncm": "34011190", "descricao": "Sabões de toucador, em barras/pedaços/figuras moldadas (verificar exceção 'Ex 01' da TIPI antes de aplicar)", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º, I, 'b'"},
+    {"ncm": "34012010", "descricao": "Sabões de toucador sob outras formas", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º, I, 'b'"},
+    {"ncm": "96032100", "descricao": "Escovas de dentes", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º, I, 'b'"},
 
     # VEÍCULOS
     {"ncm": "87011000", "descricao": "Motocultores", "categoria": "Veículos", "referencia": "Lei 10.485/2002 art. 1º"},
@@ -213,7 +217,19 @@ MONOFASICOS = [
     {"ncm": "40112000", "descricao": "Pneus novos para ônibus e caminhões", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "40113000", "descricao": "Pneus novos para aeronaves", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "40114000", "descricao": "Pneus novos para motocicletas", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
+    {"ncm": "40115000", "descricao": "Pneus novos para bicicletas", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
+    {"ncm": "40117090", "descricao": "Pneus novos para tratores agrícolas/florestais", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
+    {"ncm": "40118090", "descricao": "Pneus novos para máquinas de construção/terraplanagem", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
+    {"ncm": "40119090", "descricao": "Outros pneus novos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "40121100", "descricao": "Pneus recauchutados para automóveis", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
+    {"ncm": "40121200", "descricao": "Pneus recauchutados para ônibus e caminhões", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
+    {"ncm": "40121300", "descricao": "Pneus recauchutados para aeronaves", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
+    {"ncm": "40121900", "descricao": "Outros pneus recauchutados", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
+    {"ncm": "40122000", "descricao": "Pneus usados", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
+    {"ncm": "40129090", "descricao": "Outras partes de pneus (protetores, flaps etc.)", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
+    {"ncm": "40131090", "descricao": "Câmaras de ar para automóveis/ônibus/caminhões", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
+    {"ncm": "40132000", "descricao": "Câmaras de ar para bicicletas", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
+    {"ncm": "40139000", "descricao": "Outras câmaras de ar", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
 
     # BEBIDAS FRIAS (água, refrigerante, cerveja — Lei 13.097/2015, art. 14)
     {"ncm": "22011000", "descricao": "Água mineral natural", "categoria": "Bebidas Frias", "referencia": "Lei 13.097/2015, art. 14"},

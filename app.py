@@ -135,8 +135,6 @@ MONOFASICOS = [
     {"ncm": "33052000", "descricao": "Preparações para ondulação/alisamento", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
     {"ncm": "33053000", "descricao": "Laquês para o cabelo", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
     {"ncm": "33059000", "descricao": "Outras preparações capilares", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
-    {"ncm": "33061000", "descricao": "Dentifrícios (cremes dentais)", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
-    {"ncm": "33069000", "descricao": "Outras preparações higiene bucal/dental", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
     {"ncm": "33071000", "descricao": "Preparações para barbear", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
     {"ncm": "33072000", "descricao": "Desodorantes corporais e antiperspirantes", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
     {"ncm": "33074100", "descricao": "Agarbatti e preparações odoríferas p/ queima", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
@@ -277,13 +275,17 @@ _MONO_CHAPTER_RULES = [
         "descricao_padrao": "Medicamento — posições 30.01, 30.03 ou 30.04",
     },
     {
+        # Posição 33.06 (higiene bucal/dentária) removida desta regra: a
+        # Lei 10.925/2004 (Cesta Básica, inciso XXVII) zerou o PIS/COFINS
+        # da posição inteira, sem ressalva de "Ex" — substitui o regime
+        # monofásico anterior por completo para esses produtos.
         "chapter": "33",
-        "headings": {"3303", "3304", "3305", "3306", "3307"},
+        "headings": {"3303", "3304", "3305", "3307"},
         "excecoes": {"33051000"},
         "categoria": "Perfumes e Cosméticos",
         "referencia": "Lei 10.147/2000 art. 1º, I, 'b'",
-        "regra_identificacao": "Monofásico por posição NCM — 33.03 a 33.07, exceto 3305.10.00 (Lei 10.147/2000)",
-        "descricao_padrao": "Perfume/Cosmético/Higiene — posições 33.03 a 33.07",
+        "regra_identificacao": "Monofásico por posição NCM — 33.03, 33.04, 33.05 (exceto 3305.10.00) e 33.07 (Lei 10.147/2000)",
+        "descricao_padrao": "Perfume/Cosmético/Higiene — posições 33.03, 33.04, 33.05 e 33.07",
     },
     {
         "chapter": "22",
@@ -912,89 +914,328 @@ def get_class_trib(ncm_code):
     })
 
 
+# --- Alíquota zero de PIS/COFINS — motor de regras ---
+#
+# Dois módulos distintos:
+#   - "Hortifrúti"/"Papel Jornal": art. 28 da Lei nº 10.865/2004 (nota de
+#     exibição fixa, mantida como já estava antes deste módulo).
+#   - "Cesta Básica": art. 1º da Lei nº 10.925/2004, incisos I a XXVII
+#     (a lei não tem incisos VIII e XVII). Nota padronizada:
+#     "Alíquota Zero - Cesta Básica (Lei 10.925/2004, art. 1º, inciso X)".
+#
+# Regras mais específicas (ncm8/subposição/prefixo) vêm ANTES das mais
+# genéricas (capítulo) na lista, para que a primeira regra que bater
+# "vença" — importante porque o feijão (Cap. 7, inciso V da Cesta Básica)
+# precisa ser resolvido antes da regra genérica de hortifrúti (Cap. 7/8).
+_ALIQ_ZERO_RULES = [
+    # ---- Cesta Básica — itens específicos que colidiriam com regras mais
+    # amplas (hortifrúti) se checados depois ----
+    {
+        "level": "ncm8", "codes": {"07133319", "07133329", "07133399"},
+        "modulo": "Cesta Básica", "inciso": "V", "descricao": "feijão",
+    },
+
+    # ---- Hortifrúti e Papel Jornal — Lei nº 10.865/2004 (inalterado) ----
+    {
+        "level": "chapter", "codes": {"07", "08"},
+        "modulo": "Hortifrúti",
+        "nota_fixa": (
+            'Alíquota zero conforme art. 28, III da Lei 10.865/2004 - '
+            'produtos hortícolas e frutas in natura'
+        ),
+        "base_legal_fixa": "Art. 28, III da Lei nº 10.865/2004",
+    },
+    {
+        "level": "heading", "codes": {"0407"},
+        "modulo": "Hortifrúti",
+        "nota_fixa": (
+            'Alíquota zero conforme art. 28, III da Lei 10.865/2004 - '
+            'produtos hortícolas e frutas in natura'
+        ),
+        "base_legal_fixa": "Art. 28, III da Lei nº 10.865/2004",
+    },
+    {
+        "level": "heading", "codes": {"4801"},
+        "modulo": "Papel Jornal",
+        "nota_fixa": (
+            'Alíquota zero conforme art. 28, I da Lei 10.865/2004 - '
+            'papel destinado à impressão de jornais. Benefício foi '
+            'instituído por prazo determinado e prorrogado por '
+            'legislação posterior — confirme a vigência atual antes '
+            'de aplicar'
+        ),
+        "base_legal_fixa": "Art. 28, I da Lei nº 10.865/2004",
+    },
+
+    # ---- Cesta Básica — Lei nº 10.925/2004, art. 1º ----
+    # Incisos I-III já existiam como módulo separado ("insumos
+    # agropecuários"); mantidos com a mesma regra de NCM, só relabelados
+    # para o padrão único "Cesta Básica" pedido.
+    {
+        "level": "chapter", "codes": {"31"},
+        "modulo": "Cesta Básica", "inciso": "I", "descricao": "adubos/fertilizantes (Capítulo 31)",
+        "aviso_extra": "Exceto produtos de uso veterinário — confirme se este NCM específico se enquadra na exceção antes de aplicar.",
+    },
+    {
+        "level": "heading", "codes": {"3808"},
+        "modulo": "Cesta Básica", "inciso": "II", "descricao": "defensivos agropecuários (posição 38.08)",
+    },
+    {
+        "level": "heading", "codes": {"1209"},
+        "modulo": "Cesta Básica", "inciso": "III", "descricao": "sementes para semeadura (posição 12.09)",
+    },
+    {
+        "level": "heading", "codes": {"0602"},
+        "modulo": "Cesta Básica", "inciso": "III", "descricao": "mudas para plantio (posição 06.02)",
+    },
+    {
+        "level": "chapter", "codes": {"25"},
+        "modulo": "Cesta Básica", "inciso": "IV", "descricao": "corretivo de solo de origem mineral (Capítulo 25)",
+    },
+    {
+        "level": "subheading", "codes": {"100620"},
+        "modulo": "Cesta Básica", "inciso": "V", "descricao": "arroz descascado (integral)",
+    },
+    {
+        "level": "subheading", "codes": {"100630"},
+        "modulo": "Cesta Básica", "inciso": "V", "descricao": "arroz semibranqueado ou branqueado",
+    },
+    {
+        "level": "subheading", "codes": {"110620"},
+        "modulo": "Cesta Básica", "inciso": "V", "descricao": "farinha (posição 11.06)",
+    },
+    {
+        "level": "ncm8", "codes": {"30029099"},
+        "modulo": "Cesta Básica", "inciso": "VI", "descricao": "inoculantes agrícolas",
+    },
+    {
+        "level": "subheading", "codes": {"300230"},
+        "modulo": "Cesta Básica", "inciso": "VII", "descricao": "vacinas veterinárias (NCM 3002.30)",
+    },
+    {
+        "level": "subheading", "codes": {"110220", "110313", "110419"},
+        "modulo": "Cesta Básica", "inciso": "IX", "descricao": "farinha/grumos/sêmolas de milho",
+    },
+    {
+        "level": "subheading", "codes": {"010511"},
+        "modulo": "Cesta Básica", "inciso": "X", "descricao": "pintos de 1 dia",
+    },
+    # XI - leite (fluido, em pó exceto condensado, fermentado, bebidas e
+    # compostos lácteos, fórmulas infantis)
+    {
+        "level": "heading", "codes": {"0401"},
+        "modulo": "Cesta Básica", "inciso": "XI", "descricao": "leite fluido pasteurizado/ultrapasteurizado",
+    },
+    {
+        "level": "subheading", "codes": {"040210", "040221", "040229"},
+        "modulo": "Cesta Básica", "inciso": "XI", "descricao": "leite em pó (integral, semidesnatado ou desnatado)",
+        "aviso_extra": "Leite condensado (NCM 0402.91/0402.99) NÃO tem esse benefício — já foi objeto de solução de consulta da Receita Federal negando a alíquota zero.",
+    },
+    {
+        "level": "heading", "codes": {"0403"},
+        "modulo": "Cesta Básica", "inciso": "XI", "descricao": "leite fermentado",
+    },
+    {
+        "level": "subheading", "codes": {"040490"},
+        "modulo": "Cesta Básica", "inciso": "XI", "descricao": "bebidas e compostos lácteos",
+    },
+    {
+        "level": "subheading", "codes": {"190110"},
+        "modulo": "Cesta Básica", "inciso": "XI", "descricao": "fórmulas infantis",
+    },
+    {
+        "level": "subheading", "codes": {"040610"},
+        "modulo": "Cesta Básica", "inciso": "XII", "descricao": "queijo fresco/requeijão",
+        "aviso_extra": (
+            "Único código do Capítulo 04 com correspondência direta e "
+            "confirmada por solução de consulta COSIT para o inciso XII "
+            "(demais tipos citados na lei — mussarela, minas, prato, "
+            "coalho, ricota, provolone, parmesão, do reino — não têm "
+            "código de 8 dígitos exclusivo; ver aviso da posição 04.06)."
+        ),
+    },
+    {
+        "level": "subheading", "codes": {"040410"},
+        "modulo": "Cesta Básica", "inciso": "XIII", "descricao": "soro de leite fluido (para industrialização de consumo humano)",
+    },
+    {
+        "level": "ncm8", "codes": {"11010010"},
+        "modulo": "Cesta Básica", "inciso": "XIV", "descricao": "farinha de trigo",
+    },
+    {
+        "level": "heading", "codes": {"1001"},
+        "modulo": "Cesta Básica", "inciso": "XV", "descricao": "trigo",
+    },
+    {
+        "level": "ncm8", "codes": {"19012000", "19059090"},
+        "modulo": "Cesta Básica", "inciso": "XVI", "descricao": "pré-mistura para pão comum e pão comum",
+        "aviso_extra": (
+            "Aplica-se apenas ao Ex 01 da TIPI de cada código — não ao "
+            "código inteiro. Sujeito a interpretação restritiva conforme "
+            "jurisprudência do STJ (pão comum = feito exclusivamente com "
+            "farinha de trigo) - confirme composição do produto."
+        ),
+    },
+    {
+        "level": "heading", "codes": {"1902"},
+        "modulo": "Cesta Básica", "inciso": "XVIII", "descricao": "massas alimentícias",
+        "aviso_extra": "Sujeito a interpretação restritiva conforme jurisprudência do STJ - confirme composição do produto.",
+    },
+    # XIX - carnes
+    {
+        "level": "heading", "codes": {"0201", "0202"},
+        "modulo": "Cesta Básica", "inciso": "XIX-a", "descricao": "carne bovina fresca/refrigerada/congelada",
+    },
+    {
+        "level": "ncm8", "codes": {"02061000"},
+        "modulo": "Cesta Básica", "inciso": "XIX-a", "descricao": "miudezas bovinas frescas/refrigeradas",
+    },
+    {
+        "level": "prefix", "codes": {"02062"},
+        "modulo": "Cesta Básica", "inciso": "XIX-a", "descricao": "miudezas bovinas congeladas (0206.2)",
+    },
+    {
+        "level": "ncm8", "codes": {"02102000"},
+        "modulo": "Cesta Básica", "inciso": "XIX-a", "descricao": "carne bovina salgada/em salmoura/seca/defumada",
+    },
+    {
+        "level": "ncm8", "codes": {"05069000"},
+        "modulo": "Cesta Básica", "inciso": "XIX-a", "descricao": "ossos e núcleos córneos não trabalhados",
+    },
+    {
+        "level": "ncm8", "codes": {"05100010"},
+        "modulo": "Cesta Básica", "inciso": "XIX-a", "descricao": "glândulas e outros produtos de origem animal",
+    },
+    {
+        "level": "prefix", "codes": {"1502101"},
+        "modulo": "Cesta Básica", "inciso": "XIX-a", "descricao": "gorduras de bovinos/ovinos/caprinos, em bruto (1502.10.1)",
+    },
+    {
+        "level": "heading", "codes": {"0203"},
+        "modulo": "Cesta Básica", "inciso": "XIX-b", "descricao": "carne suína fresca/refrigerada/congelada",
+    },
+    {
+        "level": "ncm8", "codes": {"02063000"},
+        "modulo": "Cesta Básica", "inciso": "XIX-b", "descricao": "miudezas suínas frescas/refrigeradas",
+    },
+    {
+        "level": "prefix", "codes": {"02064"},
+        "modulo": "Cesta Básica", "inciso": "XIX-b", "descricao": "miudezas suínas congeladas (0206.4)",
+    },
+    {
+        "level": "heading", "codes": {"0207", "0209"},
+        "modulo": "Cesta Básica", "inciso": "XIX-b", "descricao": "carnes/miudezas de aves; toucinho e gorduras de porco/aves",
+    },
+    {
+        "level": "prefix", "codes": {"02101"},
+        "modulo": "Cesta Básica", "inciso": "XIX-b", "descricao": "carne suína salgada/em salmoura/seca/defumada (0210.1)",
+    },
+    {
+        "level": "ncm8", "codes": {"02109900"},
+        "modulo": "Cesta Básica", "inciso": "XIX-b", "descricao": "carne de frango salgada/em salmoura/seca/defumada",
+    },
+    {
+        "level": "heading", "codes": {"0204"},
+        "modulo": "Cesta Básica", "inciso": "XIX-c", "descricao": "carne de ovinos/caprinos fresca/refrigerada/congelada",
+    },
+    {
+        "level": "ncm8", "codes": {"02068000"},
+        "modulo": "Cesta Básica", "inciso": "XIX-c", "descricao": "miudezas de ovinos/caprinos",
+    },
+    # XX - peixes
+    {
+        "level": "heading", "codes": {"0302"}, "excecoes": {"03029000"},
+        "modulo": "Cesta Básica", "inciso": "XX-a", "descricao": "peixes frescos ou refrigerados (exceto código 0302.90.00)",
+    },
+    {
+        "level": "heading", "codes": {"0303", "0304"},
+        "modulo": "Cesta Básica", "inciso": "XX-b", "descricao": "peixes congelados; filés e outras carnes de peixes",
+    },
+    {
+        "level": "heading", "codes": {"0901"},
+        "modulo": "Cesta Básica", "inciso": "XXI", "descricao": "café",
+    },
+    {
+        "level": "prefix", "codes": {"21011"},
+        "modulo": "Cesta Básica", "inciso": "XXI", "descricao": "extratos/essências/concentrados de café (2101.1)",
+    },
+    {
+        "level": "ncm8", "codes": {"17011400", "17019900"},
+        "modulo": "Cesta Básica", "inciso": "XXII", "descricao": "açúcar",
+    },
+    {
+        "level": "heading", "codes": {"1507", "1508", "1509", "1510", "1511", "1512", "1513", "1514"},
+        "modulo": "Cesta Básica", "inciso": "XXIII", "descricao": "óleo de soja e outros óleos vegetais",
+    },
+    {
+        "level": "ncm8", "codes": {"04051000"},
+        "modulo": "Cesta Básica", "inciso": "XXIV", "descricao": "manteiga",
+    },
+    {
+        "level": "ncm8", "codes": {"15171000"},
+        "modulo": "Cesta Básica", "inciso": "XXV", "descricao": "margarina",
+    },
+    {
+        "level": "ncm8", "codes": {"34011190"},
+        "modulo": "Cesta Básica", "inciso": "XXVI", "descricao": "sabões de toucador",
+        "aviso_extra": (
+            "Aplica-se apenas ao Ex 01 da TIPI (sabão de toucador) — não "
+            "ao código inteiro. Este NCM também consta na tabela de "
+            "produtos monofásicos (Lei 10.147/2000) para outros Ex da "
+            "TIPI não abrangidos por este benefício; confirme qual regime "
+            "se aplica ao Ex específico do seu produto."
+        ),
+    },
+    {
+        "level": "heading", "codes": {"3306"},
+        "modulo": "Cesta Básica", "inciso": "XXVII", "descricao": "produtos de higiene bucal/dentária",
+    },
+]
+
+
 def get_pis_cofins_aliquota_zero(ncm_clean):
     """
     Alíquota zero de PIS/COFINS.
 
-    - Art. 28, III da Lei nº 10.865/2004: hortícolas/frutas in natura ou com
-      processo simples de conservação (Capítulos 7 e 8) e ovos (posição
-      04.07). Não se aplica ao Capítulo 20 (conservas, sucos, doces),
-      que já sofreu processo industrial e perde o benefício.
-    - Art. 28, I da Lei nº 10.865/2004: papel destinado à impressão de
-      jornais (posição 48.01). Benefício foi instituído por prazo
-      determinado e prorrogado por legislação posterior — confirmar vigência
-      atual antes de aplicar.
-    - Art. 1º da Lei nº 10.925/2004: adubos/fertilizantes (Capítulo 31,
-      exceto uso veterinário), defensivos agropecuários (posição 38.08),
-      sementes para semeadura (posição 12.09) e mudas para plantio
-      (posição 06.02).
+    Dois módulos: "Hortifrúti"/"Papel Jornal" (art. 28 da Lei 10.865/2004)
+    e "Cesta Básica" (art. 1º da Lei 10.925/2004, incisos I a XXVII — a lei
+    não tem incisos VIII e XVII). Ver _ALIQ_ZERO_RULES para o detalhamento
+    por inciso/NCM.
     """
     chapter = ncm_clean[:2]
     heading = ncm_clean[:4]
+    subheading = ncm_clean[:6]
 
-    if chapter in ('07', '08') or heading == '0407':
+    for rule in _ALIQ_ZERO_RULES:
+        level = rule["level"]
+        if level == "chapter" and chapter not in rule["codes"]:
+            continue
+        if level == "heading" and heading not in rule["codes"]:
+            continue
+        if level == "subheading" and subheading not in rule["codes"]:
+            continue
+        if level == "ncm8" and ncm_clean not in rule["codes"]:
+            continue
+        if level == "prefix" and not any(ncm_clean.startswith(p) for p in rule["codes"]):
+            continue
+        if ncm_clean in rule.get("excecoes", ()):
+            continue
+
+        if "nota_fixa" in rule:
+            return {
+                'aliquota_zero': True,
+                'base_legal': rule['base_legal_fixa'],
+                'nota': rule['nota_fixa'],
+            }
+
+        base_legal = f"Lei 10.925/2004, art. 1º, inciso {rule['inciso']}"
+        nota = f"Alíquota Zero - Cesta Básica ({base_legal}) - {rule['descricao']}"
+        if rule.get("aviso_extra"):
+            nota += f". {rule['aviso_extra']}"
         return {
             'aliquota_zero': True,
-            'base_legal': 'Art. 28, III da Lei nº 10.865/2004',
-            'nota': (
-                'Alíquota zero conforme art. 28, III da Lei 10.865/2004 - '
-                'produtos hortícolas e frutas in natura'
-            ),
-        }
-
-    if heading == '4801':
-        return {
-            'aliquota_zero': True,
-            'base_legal': 'Art. 28, I da Lei nº 10.865/2004',
-            'nota': (
-                'Alíquota zero conforme art. 28, I da Lei 10.865/2004 - '
-                'papel destinado à impressão de jornais. Benefício foi '
-                'instituído por prazo determinado e prorrogado por '
-                'legislação posterior — confirme a vigência atual antes '
-                'de aplicar'
-            ),
-        }
-
-    if heading == '3808':
-        return {
-            'aliquota_zero': True,
-            'base_legal': 'Art. 1º, II da Lei nº 10.925/2004',
-            'nota': (
-                'Alíquota zero conforme art. 1º, II da Lei 10.925/2004 - '
-                'defensivos agropecuários (posição 38.08)'
-            ),
-        }
-
-    if chapter == '31':
-        return {
-            'aliquota_zero': True,
-            'base_legal': 'Art. 1º, I da Lei nº 10.925/2004',
-            'nota': (
-                'Alíquota zero conforme art. 1º, I da Lei 10.925/2004 - '
-                'adubos/fertilizantes (Capítulo 31), exceto produtos de uso '
-                'veterinário — confirme se este NCM específico se enquadra '
-                'na exceção antes de aplicar'
-            ),
-        }
-
-    if heading == '1209':
-        return {
-            'aliquota_zero': True,
-            'base_legal': 'Art. 1º, III da Lei nº 10.925/2004',
-            'nota': (
-                'Alíquota zero conforme art. 1º, III da Lei 10.925/2004 - '
-                'sementes para semeadura (posição 12.09)'
-            ),
-        }
-
-    if heading == '0602':
-        return {
-            'aliquota_zero': True,
-            'base_legal': 'Art. 1º, III da Lei nº 10.925/2004',
-            'nota': (
-                'Alíquota zero conforme art. 1º, III da Lei 10.925/2004 - '
-                'mudas para plantio (posição 06.02)'
-            ),
+            'base_legal': base_legal,
+            'nota': nota,
         }
 
     return None
@@ -1015,6 +1256,64 @@ def get_icms_hortifruti_aviso(ncm_clean):
             'alterações). Consulte a legislação estadual específica antes de '
             'aplicar a alíquota padrão.'
         )
+    return None
+
+
+def get_queijo_aviso(ncm_clean, descricao):
+    """
+    Avisos sobre queijos (posição 04.06) que NÃO se enquadram
+    automaticamente na alíquota zero do inciso XII da Lei 10.925/2004
+    (0406.10 já é tratado como alíquota zero em _ALIQ_ZERO_RULES).
+    """
+    heading = ncm_clean[:4]
+    subheading = ncm_clean[:6]
+    descricao_lower = (descricao or '').lower()
+
+    if heading != '0406':
+        return None
+
+    if subheading == '040620':
+        return (
+            'Queijo ralado ou em pó (NCM 0406.20) está EXCLUÍDO do '
+            'benefício do inciso XII, mesmo sendo queijo — a Receita '
+            'Federal já negou expressamente esse benefício para queijos '
+            'ralados/em pó (ex.: tipo tropical/regional do norte).'
+        )
+
+    if subheading == '040630':
+        return (
+            'Queijo fundido (NCM 0406.30) está fora do escopo do inciso '
+            'XII da Lei 10.925/2004 — não tem alíquota zero.'
+        )
+
+    if 'cheddar' in descricao_lower:
+        return (
+            'Queijo tipo cheddar NÃO tem alíquota zero — a Receita '
+            'Federal já negou expressamente esse benefício para esse tipo '
+            'de queijo, mesmo quando classificado na posição 04.06.'
+        )
+
+    if 'cream cheese' in descricao_lower or 'queijo cremoso' in descricao_lower:
+        return (
+            'Cream cheese (queijo cremoso) NÃO tem alíquota zero — a '
+            'Receita Federal já negou expressamente esse benefício para '
+            'esse tipo de queijo, mesmo quando classificado na posição '
+            '04.06.'
+        )
+
+    if subheading != '040610':
+        return (
+            'Este NCM (posição 04.06) pode abranger tipos de queijo '
+            'citados no inciso XII (mussarela, minas, prato, coalho, '
+            'ricota, provolone, parmesão, do reino), mas a Receita Federal '
+            '(solução de consulta COSIT) esclarece que a lei não define um '
+            'código de 8 dígitos exclusivo por tipo de queijo — a '
+            'aplicação da alíquota zero depende da composição/classificação '
+            'técnica do produto, analisada caso a caso. Este NCM NÃO foi '
+            'marcado como alíquota zero automaticamente; confirme o '
+            'enquadramento antes de aplicar o benefício.'
+        )
+
     return None
 
 
@@ -1149,6 +1448,13 @@ def get_ncm(ncm_code):
     is_monofasico, mono_data = get_monofasico_info(ncm_clean)
     pis_cofins_zero = get_pis_cofins_aliquota_zero(ncm_clean)
 
+    # Quando a alíquota zero se aplica, ela prevalece na exibição sobre a
+    # classificação monofásica — podem coexistir em teoria (ex.: dois "Ex"
+    # distintos do mesmo NCM8 com regimes diferentes), mas mostrar as duas
+    # etiquetas ao mesmo tempo confundiria o usuário. A reforma tributária
+    # (LC 214/2025) é um regime independente e usa is_monofasico original.
+    is_monofasico_display = False if pis_cofins_zero else is_monofasico
+
     if pis_cofins_zero:
         pis_cst = cofins_cst = "06"
     elif is_monofasico:
@@ -1170,11 +1476,12 @@ def get_ncm(ncm_code):
     cofins_aliq_lr = 0.0 if pis_cofins_zero else 7.6
     cofins_aliq_lp = 0.0 if pis_cofins_zero else 3.0
     nota_aliquota_zero = pis_cofins_zero["nota"] if pis_cofins_zero else None
+    descricao_stripped = strip_html(ncm_data.get("descricao", "Não encontrado"))
 
     result = {
         "ncm": ncm_clean,
         "ncm_formatado": format_ncm(ncm_clean),
-        "descricao": strip_html(ncm_data.get("descricao", "Não encontrado")),
+        "descricao": descricao_stripped,
         "data_inicio": ncm_data.get("data_inicio", ""),
         "data_fim": ncm_data.get("data_fim", ""),
         "tipo_ato": ncm_data.get("tipo_ato", ""),
@@ -1190,14 +1497,14 @@ def get_ncm(ncm_code):
             "pis": {
                 "lucro_real": {"aliquota": pis_aliq_lr, "cst": pis_cst},
                 "lucro_presumido": {"aliquota": pis_aliq_lp, "cst": pis_cst},
-                "monofasico": is_monofasico,
+                "monofasico": is_monofasico_display,
                 "aliquota_zero": bool(pis_cofins_zero),
                 "nota_aliquota_zero": nota_aliquota_zero,
             },
             "cofins": {
                 "lucro_real": {"aliquota": cofins_aliq_lr, "cst": cofins_cst},
                 "lucro_presumido": {"aliquota": cofins_aliq_lp, "cst": cofins_cst},
-                "monofasico": is_monofasico,
+                "monofasico": is_monofasico_display,
                 "aliquota_zero": bool(pis_cofins_zero),
                 "nota_aliquota_zero": nota_aliquota_zero,
             },
@@ -1207,7 +1514,8 @@ def get_ncm(ncm_code):
         "icms_estados": ICMS_STATES,
         "icms_piaui": get_icms_piaui(ncm_clean),
         "icms_hortifruti_aviso": get_icms_hortifruti_aviso(ncm_clean),
-        "monofasico": is_monofasico,
+        "queijo_aviso": get_queijo_aviso(ncm_clean, descricao_stripped),
+        "monofasico": is_monofasico_display,
         "monofasico_dados": mono_data,
         "reforma_tributaria": get_reforma_tributaria_info(ncm_clean, is_monofasico),
     }

@@ -185,7 +185,7 @@ function renderResult(d) {
   }
 
   const monoAvisoEl = document.getElementById('mono-aviso');
-  const monoAviso = d.monofasico_dados?.aviso;
+  const monoAviso = d.monofasico_dados?.aviso || d.queijo_aviso;
   if (monoAviso) {
     monoAvisoEl.innerHTML = `<span style="font-size:1.1rem;line-height:1.2">⚠</span><span>${monoAviso}</span>`;
     monoAvisoEl.classList.remove('hidden');

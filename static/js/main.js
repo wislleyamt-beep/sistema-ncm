@@ -184,6 +184,15 @@ function renderResult(d) {
     badgeEl.innerHTML = `<span class="tag-normal">📦 Tributação Normal</span>`;
   }
 
+  const monoAvisoEl = document.getElementById('mono-aviso');
+  const monoAviso = d.monofasico_dados?.aviso;
+  if (monoAviso) {
+    monoAvisoEl.innerHTML = `<span style="font-size:1.1rem;line-height:1.2">⚠</span><span>${monoAviso}</span>`;
+    monoAvisoEl.classList.remove('hidden');
+  } else {
+    monoAvisoEl.classList.add('hidden');
+  }
+
   document.getElementById('res-class-trib').innerHTML =
     `<div style="font-size:.7rem;opacity:.8;margin-bottom:3px">ClassTrib</div>${d.tributacao.class_trib}`;
 

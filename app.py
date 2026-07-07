@@ -190,13 +190,12 @@ MONOFASICOS = [
     {"ncm": "84131100", "descricao": "Bombas de combustível para motores", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "84131900", "descricao": "Outras bombas combustível/lubrificante", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "84141000", "descricao": "Bombas de vácuo para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "84212300", "descricao": "Filtros de óleo para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
+    {"ncm": "84212300", "descricao": "Filtros de óleo para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)"},
     {"ncm": "84229090", "descricao": "Partes de máquinas de lavar veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "84831010", "descricao": "Virabrequins para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "84833010", "descricao": "Caixas de marchas para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "84834010", "descricao": "Engrenagens e rodas de fricção p/ veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "84835010", "descricao": "Volantes e polias p/ veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "84836010", "descricao": "Embreagens e juntas p/ veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "85122010", "descricao": "Aparelhos de sinalização de veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "85123010", "descricao": "Aparelhos de sinalização acústica veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "85124010", "descricao": "Limpadores de para-brisas", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
@@ -213,23 +212,23 @@ MONOFASICOS = [
     {"ncm": "87089110", "descricao": "Radiadores de ar condicionado p/ veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "87089210", "descricao": "Volantes, colunas e caixas de direção", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
     {"ncm": "87089910", "descricao": "Outras partes e acessórios p/ veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40111000", "descricao": "Pneus novos para automóveis", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40112000", "descricao": "Pneus novos para ônibus e caminhões", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40113000", "descricao": "Pneus novos para aeronaves", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40114000", "descricao": "Pneus novos para motocicletas", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40115000", "descricao": "Pneus novos para bicicletas", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40117090", "descricao": "Pneus novos para tratores agrícolas/florestais", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40118090", "descricao": "Pneus novos para máquinas de construção/terraplanagem", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40119090", "descricao": "Outros pneus novos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40121100", "descricao": "Pneus recauchutados para automóveis", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40121200", "descricao": "Pneus recauchutados para ônibus e caminhões", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40121300", "descricao": "Pneus recauchutados para aeronaves", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40121900", "descricao": "Outros pneus recauchutados", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40122000", "descricao": "Pneus usados", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40129090", "descricao": "Outras partes de pneus (protetores, flaps etc.)", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40131090", "descricao": "Câmaras de ar para automóveis/ônibus/caminhões", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40132000", "descricao": "Câmaras de ar para bicicletas", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
-    {"ncm": "40139000", "descricao": "Outras câmaras de ar", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 3º"},
+    {"ncm": "40111000", "descricao": "Pneus novos para automóveis", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40112000", "descricao": "Pneus novos para ônibus e caminhões", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40113000", "descricao": "Pneus novos para aeronaves", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40114000", "descricao": "Pneus novos para motocicletas", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40115000", "descricao": "Pneus novos para bicicletas", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40117090", "descricao": "Pneus novos para tratores agrícolas/florestais", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40118090", "descricao": "Pneus novos para máquinas de construção/terraplanagem", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40119090", "descricao": "Outros pneus novos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40121100", "descricao": "Pneus recauchutados para automóveis", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40121200", "descricao": "Pneus recauchutados para ônibus e caminhões", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40121300", "descricao": "Pneus recauchutados para aeronaves", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40121900", "descricao": "Outros pneus recauchutados", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40122000", "descricao": "Pneus usados", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40129090", "descricao": "Outras partes de pneus (protetores, flaps etc.)", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40131090", "descricao": "Câmaras de ar para automóveis/ônibus/caminhões", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40132000", "descricao": "Câmaras de ar para bicicletas", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
+    {"ncm": "40139000", "descricao": "Outras câmaras de ar", "categoria": "Autopeças", "referencia": "Lei 10.485/2002 art. 5º"},
 
     # BEBIDAS FRIAS (água, refrigerante, cerveja — Lei 13.097/2015, art. 14)
     {"ncm": "22011000", "descricao": "Água mineral natural", "categoria": "Bebidas Frias", "referencia": "Lei 13.097/2015, art. 14"},
@@ -296,6 +295,19 @@ _MONO_CHAPTER_RULES = [
     },
 ]
 
+_AVISO_AUTOPROPULSADO = (
+    "Aplica-se apenas a produtos autopropulsados (§1º do art. 1º da Lei "
+    "10.485/2002). Confirme se este equipamento é autopropulsado antes de "
+    "aplicar o benefício."
+)
+
+_AVISO_ANEXO_II = (
+    "Este NCM está sujeito à tributação monofásica APENAS quando destinado "
+    "aos produtos específicos listados no Anexo II da Lei 10.485/2002. "
+    "Confirme a destinação/aplicação real do produto antes de aplicar o "
+    "benefício."
+)
+
 _MONO_HEADING_RULES = [
     {
         "headings": {"8711", "8712", "8713", "8714"},
@@ -303,6 +315,141 @@ _MONO_HEADING_RULES = [
         "referencia": "Lei 10.485/2002 art. 1º",
         "regra_identificacao": "Monofásico por posição NCM — 8711 a 8714 (Lei 10.485/2002)",
         "descricao_padrao": "Motocicleta/Veículo",
+    },
+    # --- Máquinas e veículos, Lei 10.485/2002 art. 1º — aplicação direta ---
+    {
+        "headings": {"7309"},
+        "categoria": "Máquinas e Veículos",
+        "referencia": "Lei 10.485/2002 art. 1º",
+        "regra_identificacao": "Monofásico por posição NCM — 73.09 (Lei 10.485/2002)",
+        "descricao_padrao": "Reservatório, tanque ou similar de ferro/aço",
+    },
+    {
+        "headings": {"8701", "8702", "8703", "8704", "8705", "8706"},
+        "categoria": "Máquinas e Veículos",
+        "referencia": "Lei 10.485/2002 art. 1º",
+        "regra_identificacao": "Monofásico por posição NCM — 87.01 a 87.06 (Lei 10.485/2002)",
+        "descricao_padrao": "Trator/veículo automotor (posições 87.01 a 87.06)",
+    },
+    # --- Máquinas do Capítulo 84 — só autopropulsadas (§1º do art. 1º) ---
+    {
+        "headings": {"8429"},
+        "categoria": "Máquinas e Veículos",
+        "referencia": "Lei 10.485/2002 art. 1º, §1º",
+        "regra_identificacao": "Monofásico por posição NCM — 84.29, só autopropulsados (Lei 10.485/2002)",
+        "descricao_padrao": "Máquina de terraplanagem/construção autopropulsada",
+        "aviso": _AVISO_AUTOPROPULSADO,
+    },
+    {
+        "headings": {"8432"},
+        "categoria": "Máquinas e Veículos",
+        "referencia": "Lei 10.485/2002 art. 1º, §1º",
+        "regra_identificacao": "Monofásico por posição NCM — 84.32, só autopropulsados (Lei 10.485/2002)",
+        "descricao_padrao": "Máquina agrícola de preparação de solo, autopropulsada",
+        "aviso": _AVISO_AUTOPROPULSADO,
+    },
+    {
+        "headings": {"8433"},
+        "categoria": "Máquinas e Veículos",
+        "referencia": "Lei 10.485/2002 art. 1º, §1º",
+        "regra_identificacao": "Monofásico por posição NCM — 84.33, só autopropulsados (Lei 10.485/2002)",
+        "descricao_padrao": "Colheitadeira/máquina de colheita, autopropulsada",
+        "aviso": _AVISO_AUTOPROPULSADO,
+    },
+    {
+        "headings": {"8434"},
+        "categoria": "Máquinas e Veículos",
+        "referencia": "Lei 10.485/2002 art. 1º, §1º",
+        "regra_identificacao": "Monofásico por posição NCM — 84.34, só autopropulsados (Lei 10.485/2002)",
+        "descricao_padrao": "Ordenhadeira, autopropulsada",
+        "aviso": _AVISO_AUTOPROPULSADO,
+    },
+    {
+        "headings": {"8435"},
+        "categoria": "Máquinas e Veículos",
+        "referencia": "Lei 10.485/2002 art. 1º, §1º",
+        "regra_identificacao": "Monofásico por posição NCM — 84.35, só autopropulsados (Lei 10.485/2002)",
+        "descricao_padrao": "Prensa para vinho/sidra/sucos, autopropulsada",
+        "aviso": _AVISO_AUTOPROPULSADO,
+    },
+    {
+        "headings": {"8436"},
+        "categoria": "Máquinas e Veículos",
+        "referencia": "Lei 10.485/2002 art. 1º, §1º",
+        "regra_identificacao": "Monofásico por posição NCM — 84.36, só autopropulsados (Lei 10.485/2002)",
+        "descricao_padrao": "Outra máquina agrícola/florestal/avicultura, autopropulsada",
+        "aviso": _AVISO_AUTOPROPULSADO,
+    },
+    {
+        "headings": {"8437"},
+        "categoria": "Máquinas e Veículos",
+        "referencia": "Lei 10.485/2002 art. 1º, §1º",
+        "regra_identificacao": "Monofásico por posição NCM — 84.37, só autopropulsados (Lei 10.485/2002)",
+        "descricao_padrao": "Máquina de limpeza/seleção de sementes/grãos, autopropulsada",
+        "aviso": _AVISO_AUTOPROPULSADO,
+    },
+    # --- Autopeças — Anexo I da Lei 10.485/2002 (aplicação direta pelo NCM) ---
+    {
+        "headings": {"6813"},
+        "categoria": "Autopeças",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo I)",
+        "regra_identificacao": "Monofásico por posição NCM — 68.13 (Anexo I, Lei 10.485/2002)",
+        "descricao_padrao": "Guarnições de fricção (lonas/pastilhas de freio)",
+    },
+    {
+        "headings": {"8511"},
+        "categoria": "Autopeças",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo I)",
+        "regra_identificacao": "Monofásico por posição NCM — 85.11 (Anexo I, Lei 10.485/2002)",
+        "descricao_padrao": "Aparelhos elétricos de ignição/arranque para motores",
+    },
+    {
+        "headings": {"8707"},
+        "categoria": "Autopeças",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo I)",
+        "regra_identificacao": "Monofásico por posição NCM — 87.07 (Anexo I, Lei 10.485/2002)",
+        "descricao_padrao": "Carroçarias para veículos automóveis",
+    },
+    {
+        "headings": {"8708"},
+        "categoria": "Autopeças",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo I)",
+        "regra_identificacao": "Monofásico por posição NCM — 87.08 (Anexo I, Lei 10.485/2002)",
+        "descricao_padrao": "Partes e acessórios de veículos automóveis (posições 87.01 a 87.05)",
+    },
+    # --- Autopeças — Anexo II da Lei 10.485/2002 (aplicação RESTRITA à
+    # destinação específica — ver aviso). Lista completa dos 15 itens do
+    # Anexo II, conforme texto oficial (planalto.gov.br/ccivil_03/leis/2002/l10485.htm).
+    # Itens 1-2 e 9-10 são por posição/subposição; os demais NCM8 específicos
+    # estão em _MONO_NCM_EXTRA e o item 14 (código fracionário) em
+    # _MONO_PREFIX_RULES.
+    {
+        # Item 1 do Anexo II
+        "headings": {"4009"},
+        "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 1)",
+        "regra_identificacao": "Monofásico por posição NCM — 40.09 (Anexo II, item 1, Lei 10.485/2002) — restrito",
+        "descricao_padrao": "Tubos de borracha vulcanizada não endurecida, com acessórios",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 1 do Anexo II: tubos de borracha vulcanizada não "
+            "endurecida da posição 40.09, com acessórios, próprios para "
+            "máquinas e veículos autopropulsados das posições 84.29, "
+            "8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, "
+            "87.04, 87.05 e 87.06.)"
+        ),
+    },
+    {
+        # Item 2 do Anexo II
+        "headings": {"8431"},
+        "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 2)",
+        "regra_identificacao": "Monofásico por posição NCM — 84.31 (Anexo II, item 2, Lei 10.485/2002) — restrito",
+        "descricao_padrao": "Partes da posição 84.31",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 2 do Anexo II: partes da posição 84.31, reconhecíveis "
+            "como exclusiva ou principalmente destinadas às máquinas e "
+            "aparelhos da posição 84.29.)"
+        ),
     },
 ]
 
@@ -316,6 +463,64 @@ _MONO_SUBHEADING_RULES = [
         "referencia": "Lei 13.097/2015, art. 14",
         "regra_identificacao": "Monofásico por subposição NCM — 2101.20 (Lei 13.097/2015)",
         "descricao_padrao": "Extrato/concentrado de chá ou erva-mate para elaboração de bebida",
+    },
+    {
+        "subheading": "842481",
+        "categoria": "Máquinas e Veículos",
+        "referencia": "Lei 10.485/2002 art. 1º, §1º",
+        "regra_identificacao": "Monofásico por subposição NCM — 8424.81, só autopropulsados (Lei 10.485/2002)",
+        "descricao_padrao": "Aparelho mecânico de pulverização/dispersão, autopropulsado",
+        "aviso": _AVISO_AUTOPROPULSADO,
+    },
+    {
+        "subheading": "731029",
+        "categoria": "Máquinas e Veículos",
+        "referencia": "Lei 10.485/2002 art. 1º",
+        "regra_identificacao": "Monofásico por subposição NCM — 7310.29 (Lei 10.485/2002)",
+        "descricao_padrao": "Outros pequenos reservatórios de ferro/aço",
+    },
+    # --- Autopeças — Anexo I (subposições de 6 dígitos) ---
+    {"subheading": "840820", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8408.20 (Anexo I)", "descricao_padrao": "Motores diesel para propulsão de veículos"},
+    {"subheading": "840991", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8409.91 (Anexo I)", "descricao_padrao": "Partes para motores de ignição por centelha"},
+    {"subheading": "840999", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8409.99 (Anexo I)", "descricao_padrao": "Partes para motores diesel"},
+    {"subheading": "841330", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8413.30 (Anexo I)", "descricao_padrao": "Bombas de combustível/óleo/refrigeração para motores"},
+    {"subheading": "841520", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8415.20 (Anexo I)", "descricao_padrao": "Ar-condicionado para veículos"},
+    {"subheading": "848310", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8483.10 (Anexo I)", "descricao_padrao": "Árvores de transmissão e manivelas"},
+    {"subheading": "848330", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8483.30 (Anexo I)", "descricao_padrao": "Mancais e chumaceiras"},
+    {"subheading": "848340", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8483.40 (Anexo I)", "descricao_padrao": "Engrenagens e rodas de fricção, caixas de marcha"},
+    {"subheading": "848350", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8483.50 (Anexo I)", "descricao_padrao": "Volantes e polias"},
+    {"subheading": "850520", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8505.20 (Anexo I)", "descricao_padrao": "Acoplamentos e embreagens eletromagnéticas"},
+    {"subheading": "851220", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8512.20 (Anexo I)", "descricao_padrao": "Aparelhos de iluminação/sinalização visual para veículos"},
+    {"subheading": "851240", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8512.40 (Anexo I)", "descricao_padrao": "Limpadores de para-brisa, degeladores e desembaçadores"},
+    {"subheading": "852721", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8527.21 (Anexo I)", "descricao_padrao": "Autorrádios com sistema de descodificação"},
+    {"subheading": "852729", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8527.29 (Anexo I)", "descricao_padrao": "Outros autorrádios"},
+    {"subheading": "853910", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8539.10 (Anexo I)", "descricao_padrao": "Faróis e projetores em unidades seladas"},
+]
+
+# Regras por prefixo numérico arbitrário — para códigos que a própria lei
+# cita abaixo do nível de 6 dígitos (ex.: "9032.89.2" no Anexo I, que cobre
+# um grupo de NCM8 e não uma subposição padrão).
+_MONO_PREFIX_RULES = [
+    {
+        "prefix": "9032892",
+        "categoria": "Autopeças",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo I)",
+        "regra_identificacao": "Monofásico — 9032.89.2 (Anexo I, Lei 10.485/2002)",
+        "descricao_padrao": "Instrumento/aparelho automático de regulação ou controle para veículos",
+    },
+    {
+        # Item 14 do Anexo II — "8483.60.1" é um código fracionário (abaixo
+        # do nível de 6 dígitos) citado no texto oficial da lei.
+        "prefix": "8483601",
+        "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 14)",
+        "regra_identificacao": "Monofásico — 8483.60.1 (Anexo II, item 14, Lei 10.485/2002) — restrito",
+        "descricao_padrao": "Embreagens de fricção",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 14 do Anexo II: embreagens de fricção do código "
+            "8483.60.1, próprias para máquinas dos códigos 84.29, 8433.20, "
+            "8433.30.00, 8433.40.00 e 8433.5.)"
+        ),
     },
 ]
 
@@ -334,6 +539,196 @@ _MONO_NCM_EXTRA = {
         "referencia": "Lei 13.097/2015, art. 14",
         "regra_identificacao": "Monofásico por NCM específico",
     },
+    # --- Máquinas e veículos, Lei 10.485/2002 art. 1º ---
+    "76129012": {
+        "ncm": "76129012",
+        "descricao": "Reservatório de alumínio",
+        "categoria": "Máquinas e Veículos",
+        "referencia": "Lei 10.485/2002 art. 1º",
+        "regra_identificacao": "Monofásico por NCM específico — 7612.90.12 (Lei 10.485/2002)",
+    },
+    "84306990": {
+        "ncm": "84306990",
+        "descricao": "Outras máquinas de terraplanagem/construção, autopropulsadas",
+        "categoria": "Máquinas e Veículos",
+        "referencia": "Lei 10.485/2002 art. 1º, §1º",
+        "regra_identificacao": "Monofásico por NCM específico — 8430.69.90, só autopropulsados (Lei 10.485/2002)",
+        "aviso": _AVISO_AUTOPROPULSADO,
+    },
+    "87162000": {
+        "ncm": "87162000",
+        "descricao": "Reboque agrícola autocarregável ou autodescarregável",
+        "categoria": "Máquinas e Veículos",
+        "referencia": "Lei 10.485/2002 art. 1º",
+        "regra_identificacao": "Monofásico por NCM específico — 8716.20.00 (Lei 10.485/2002)",
+    },
+    # --- Autopeças — Anexo I (NCM8 específicos, aplicação direta) ---
+    "40161010": {"ncm": "40161010", "descricao": "Batentes de borracha para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 4016.10.10 (Anexo I)"},
+    "40169990": {
+        "ncm": "40169990", "descricao": "Outras obras de borracha vulcanizada não endurecida (Anexo I, aplica-se apenas aos Ex 03 e Ex 05 da TIPI)",
+        "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 4016.99.90, Ex 03 e 05 (Anexo I)",
+        "aviso": "Este NCM só é monofásico nos Ex 03 e Ex 05 da TIPI — não no código inteiro. Confirme o Ex-tarifário exato do item antes de aplicar.",
+    },
+    "70071100": {"ncm": "70071100", "descricao": "Vidro de segurança temperado, para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 7007.11.00 (Anexo I)"},
+    "70072100": {"ncm": "70072100", "descricao": "Vidro de segurança laminado, para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 7007.21.00 (Anexo I)"},
+    "70091000": {"ncm": "70091000", "descricao": "Espelhos retrovisores para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 7009.10.00 (Anexo I)"},
+    "73201000": {
+        "ncm": "73201000", "descricao": "Molas de lâminas e suas folhas, de ferro/aço (Anexo I, aplica-se apenas ao Ex 01 da TIPI)",
+        "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 7320.10.00, Ex 01 (Anexo I)",
+        "aviso": "Este NCM só é monofásico no Ex 01 da TIPI — não no código inteiro. Confirme o Ex-tarifário exato do item antes de aplicar.",
+    },
+    "83012000": {"ncm": "83012000", "descricao": "Fechaduras para veículos automóveis", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8301.20.00 (Anexo I)"},
+    "83023000": {"ncm": "83023000", "descricao": "Guarnições, ferragens e artigos semelhantes para veículos automóveis", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8302.30.00 (Anexo I)"},
+    "84073390": {"ncm": "84073390", "descricao": "Outros motores de ignição por centelha, 250-1000cc, para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8407.33.90 (Anexo I)"},
+    "84073490": {"ncm": "84073490", "descricao": "Outros motores de ignição por centelha, >1000cc, para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8407.34.90 (Anexo I)"},
+    "84148021": {"ncm": "84148021", "descricao": "Turbocompressores para motores de veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8414.80.21 (Anexo I)"},
+    "84148022": {"ncm": "84148022", "descricao": "Compressores de ar para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8414.80.22 (Anexo I)"},
+    "84139100": {
+        "ncm": "84139100", "descricao": "Partes de bombas para líquidos, para veículos (Anexo I, aplica-se apenas ao Ex 01 da TIPI)",
+        "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8413.91.00, Ex 01 (Anexo I)",
+        "aviso": "Este NCM só é monofásico no Ex 01 da TIPI — não no código inteiro. Confirme o Ex-tarifário exato do item antes de aplicar.",
+    },
+    "84213100": {"ncm": "84213100", "descricao": "Filtros de entrada de ar para motores de ignição por centelha/compressão", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8421.31.00 (Anexo I)"},
+    "84314100": {"ncm": "84314100", "descricao": "Partes (baldes/caçambas/pás) de máquinas das posições 84.29/84.30", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8431.41.00 (Anexo I)"},
+    "84314200": {"ncm": "84314200", "descricao": "Partes (lâminas/scarificadores) de máquinas das posições 84.29/84.30", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8431.42.00 (Anexo I)"},
+    "84339090": {"ncm": "84339090", "descricao": "Outras partes de máquinas/aparelhos de colheita ou debulha (posição 84.33)", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8433.90.90 (Anexo I)"},
+    "84818099": {
+        "ncm": "84818099", "descricao": "Outras torneiras/válvulas e dispositivos semelhantes, para veículos (Anexo I, aplica-se apenas aos Ex 01 e Ex 02 da TIPI)",
+        "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8481.80.99, Ex 01 e 02 (Anexo I)",
+        "aviso": "Este NCM só é monofásico nos Ex 01 e Ex 02 da TIPI — não no código inteiro. Confirme o Ex-tarifário exato do item antes de aplicar.",
+    },
+    "84832000": {"ncm": "84832000", "descricao": "Rolamentos (mancais) de encaixe (plummer blocks) para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8483.20.00 (Anexo I)"},
+    "85071000": {"ncm": "85071000", "descricao": "Acumuladores (baterias) de chumbo para arranque de motores", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8507.10.00 (Anexo I)"},
+    "85123000": {"ncm": "85123000", "descricao": "Aparelhos de sinalização acústica (buzinas) para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8512.30.00 (Anexo I)"},
+    "85129000": {"ncm": "85129000", "descricao": "Partes de aparelhos elétricos de iluminação/sinalização para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8512.90.00 (Anexo I)"},
+    "85365090": {
+        "ncm": "85365090", "descricao": "Outros interruptores para tensão até 1kV (Anexo I, aplica-se apenas ao Ex 01 da TIPI)",
+        "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8536.50.90, Ex 01 (Anexo I)",
+        "aviso": "Este NCM só é monofásico no Ex 01 da TIPI — não no código inteiro. Confirme o Ex-tarifário exato do item antes de aplicar.",
+    },
+    "85443000": {"ncm": "85443000", "descricao": "Jogos de fios para velas de ignição e outros jogos de fios para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 8544.30.00 (Anexo I)"},
+    "90292010": {"ncm": "90292010", "descricao": "Taxímetros", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 9029.20.10 (Anexo I)"},
+    "90299010": {"ncm": "90299010", "descricao": "Partes de contadores/taxímetros/velocímetros para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 9029.90.10 (Anexo I)"},
+    "90303921": {"ncm": "90303921", "descricao": "Aparelhos de diagnóstico eletrônico para sistemas de veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 9030.39.21 (Anexo I)"},
+    "90318040": {"ncm": "90318040", "descricao": "Aparelhos e instrumentos de medida/controle para veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 9031.80.40 (Anexo I)"},
+    "91040000": {"ncm": "91040000", "descricao": "Relógios para painéis de instrumentos de veículos", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 9104.00.00 (Anexo I)"},
+    "94012000": {"ncm": "94012000", "descricao": "Assentos para veículos automóveis", "categoria": "Autopeças", "referencia": "Lei 10.485/2002, art. 3º (Anexo I)", "regra_identificacao": "Monofásico — 9401.20.00 (Anexo I)"},
+
+    # --- Autopeças — Anexo II da Lei 10.485/2002 (itens 3-13 e 15; o item
+    # 14 está em _MONO_PREFIX_RULES por ser um código fracionário) ---
+    "84089090": {
+        "ncm": "84089090", "descricao": "Motores diesel/semidiesel", "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 3)", "regra_identificacao": "Monofásico — 8408.90.90 (Anexo II, item 3) — restrito",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 3 do Anexo II: motores do código 8408.90.90, próprios "
+            "para máquinas dos códigos 84.29, 8433.20, 8433.30.00, "
+            "8433.40.00 e 8433.5.)"
+        ),
+    },
+    "84122110": {
+        "ncm": "84122110", "descricao": "Cilindros hidráulicos (motores hidráulicos de movimento retilíneo)", "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 4)", "regra_identificacao": "Monofásico — 8412.21.10 (Anexo II, item 4) — restrito",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 4 do Anexo II: cilindros hidráulicos do código "
+            "8412.21.10, próprios para máquinas dos códigos 84.29, "
+            "8433.20, 8433.30.00, 8433.40.00 e 8433.5.)"
+        ),
+    },
+    "84122190": {
+        "ncm": "84122190", "descricao": "Outros motores hidráulicos de movimento retilíneo (cilindros)", "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 5)", "regra_identificacao": "Monofásico — 8412.21.90 (Anexo II, item 5) — restrito",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 5 do Anexo II: outros motores hidráulicos de movimento "
+            "retilíneo (cilindros) do código 8412.21.90, próprios para "
+            "máquinas dos códigos 84.29, 8433.20, 8433.30.00, 8433.40.00 e "
+            "8433.5.)"
+        ),
+    },
+    "84123110": {
+        "ncm": "84123110", "descricao": "Cilindros pneumáticos", "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 6)", "regra_identificacao": "Monofásico — 8412.31.10 (Anexo II, item 6) — restrito",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 6 do Anexo II: cilindros pneumáticos do código "
+            "8412.31.10, próprios para produtos dos códigos 8701.20.00, "
+            "87.02 e 87.04.)"
+        ),
+    },
+    "84136019": {
+        "ncm": "84136019", "descricao": "Bombas volumétricas rotativas", "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 7)", "regra_identificacao": "Monofásico — 8413.60.19 (Anexo II, item 7) — restrito",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 7 do Anexo II: bombas volumétricas rotativas do código "
+            "8413.60.19, próprias para produtos dos códigos 84.29, "
+            "8433.20, 8433.30.00, 8433.40.00, 8433.5, 8701.20.00, 87.02 e "
+            "87.04.)"
+        ),
+    },
+    "84148019": {
+        "ncm": "84148019", "descricao": "Compressores de ar", "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 8)", "regra_identificacao": "Monofásico — 8414.80.19 (Anexo II, item 8) — restrito",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 8 do Anexo II: compressores de ar do código "
+            "8414.80.19, próprios para produtos dos códigos 8701.20.00, "
+            "87.02 e 87.04.)"
+        ),
+    },
+    "84149039": {
+        "ncm": "84149039", "descricao": "Caixas de ventilação para veículos autopropulsados", "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 9)", "regra_identificacao": "Monofásico — 8414.90.39 (Anexo II, item 9) — restrito",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 9 do Anexo II: caixas de ventilação para veículos "
+            "autopropulsados, classificadas no código 8414.90.39.)"
+        ),
+    },
+    "84329000": {
+        "ncm": "84329000", "descricao": "Partes de máquinas de preparação/cultivo do solo", "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 10)", "regra_identificacao": "Monofásico — 8432.90.00 (Anexo II, item 10) — restrito",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 10 do Anexo II: partes classificadas no código "
+            "8432.90.00, de máquinas das posições 8432.40.00 e "
+            "8432.80.00.)"
+        ),
+    },
+    "84811000": {
+        "ncm": "84811000", "descricao": "Válvulas redutoras de pressão", "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 11)", "regra_identificacao": "Monofásico — 8481.10.00 (Anexo II, item 11) — restrito",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 11 do Anexo II: válvulas redutoras de pressão do "
+            "código 8481.10.00, próprias para máquinas e veículos "
+            "autopropulsados dos códigos 84.29, 8433.20, 8433.30.00, "
+            "8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e "
+            "87.06.)"
+        ),
+    },
+    "84812090": {
+        "ncm": "84812090", "descricao": "Válvulas para transmissões óleo-hidráulicas ou pneumáticas", "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 12)", "regra_identificacao": "Monofásico — 8481.20.90 (Anexo II, item 12) — restrito",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 12 do Anexo II: válvulas para transmissões "
+            "óleo-hidráulicas ou pneumáticas do código 8481.20.90, "
+            "próprias para máquinas dos códigos 84.29, 8433.20, "
+            "8433.30.00, 8433.40.00 e 8433.5.)"
+        ),
+    },
+    "84818092": {
+        "ncm": "84818092", "descricao": "Válvulas solenoides", "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 13)", "regra_identificacao": "Monofásico — 8481.80.92 (Anexo II, item 13) — restrito",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 13 do Anexo II: válvulas solenoides do código "
+            "8481.80.92, próprias para máquinas e veículos autopropulsados "
+            "das posições 84.29, 8433.20, 8433.30.00, 8433.40.00, 8433.5, "
+            "87.01, 87.02, 87.03, 87.04, 87.05 e 87.06.)"
+        ),
+    },
+    "85011019": {
+        "ncm": "85011019", "descricao": "Outros motores de corrente contínua, para acionamento elétrico de vidros de veículos autopropulsados", "categoria": "Autopeças (Anexo II)",
+        "referencia": "Lei 10.485/2002, art. 3º (Anexo II, item 15)", "regra_identificacao": "Monofásico — 8501.10.19 (Anexo II, item 15) — restrito",
+        "aviso": _AVISO_ANEXO_II + (
+            " (Item 15 do Anexo II: outros motores de corrente contínua do "
+            "código 8501.10.19, próprios para acionamento elétrico de "
+            "vidros de veículos autopropulsados.)"
+        ),
+    },
 }
 
 # Índice rápido dos NCMs específicos da tabela principal
@@ -350,16 +745,19 @@ def get_monofasico_info(ncm_clean):
         data = dict(_MONOFASICOS_IDX[ncm_clean])
         data["regra_identificacao"] = "Monofásico por NCM específico"
         data.setdefault("ncm_formatado", format_ncm(ncm_clean))
+        data.setdefault("aviso", None)
         return True, data
 
-    # 2. NCMs extras (ex.: preservativos)
+    # 2. NCMs extras (ex.: preservativos, autopeças do Anexo I com "Ex" específico)
     if ncm_clean in _MONO_NCM_EXTRA:
         data = dict(_MONO_NCM_EXTRA[ncm_clean])
         data.setdefault("ncm_formatado", format_ncm(ncm_clean))
+        data.setdefault("aviso", None)
         return True, data
 
     chapter = ncm_clean[:2]
     heading = ncm_clean[:4]
+    subheading = ncm_clean[:6]
 
     # 3. Regras por capítulo
     for rule in _MONO_CHAPTER_RULES:
@@ -376,6 +774,7 @@ def get_monofasico_info(ncm_clean):
             "categoria": rule["categoria"],
             "referencia": rule["referencia"],
             "regra_identificacao": rule["regra_identificacao"],
+            "aviso": rule.get("aviso"),
         }
 
     # 4. Regras por posição (heading)
@@ -389,10 +788,10 @@ def get_monofasico_info(ncm_clean):
             "categoria": rule["categoria"],
             "referencia": rule["referencia"],
             "regra_identificacao": rule["regra_identificacao"],
+            "aviso": rule.get("aviso"),
         }
 
     # 5. Regras por subposição (6 dígitos)
-    subheading = ncm_clean[:6]
     for rule in _MONO_SUBHEADING_RULES:
         if subheading != rule["subheading"]:
             continue
@@ -403,6 +802,22 @@ def get_monofasico_info(ncm_clean):
             "categoria": rule["categoria"],
             "referencia": rule["referencia"],
             "regra_identificacao": rule["regra_identificacao"],
+            "aviso": rule.get("aviso"),
+        }
+
+    # 6. Regras por prefixo numérico arbitrário (para códigos "quebrados" que a
+    # lei cita abaixo do nível de 6 dígitos, ex.: 9032.89.2)
+    for rule in _MONO_PREFIX_RULES:
+        if not ncm_clean.startswith(rule["prefix"]):
+            continue
+        return True, {
+            "ncm": ncm_clean,
+            "ncm_formatado": format_ncm(ncm_clean),
+            "descricao": rule["descricao_padrao"],
+            "categoria": rule["categoria"],
+            "referencia": rule["referencia"],
+            "regra_identificacao": rule["regra_identificacao"],
+            "aviso": rule.get("aviso"),
         }
 
     return False, None

@@ -104,7 +104,7 @@ MONOFASICOS = [
     {"ncm": "27111200", "descricao": "Propano liquefeito", "categoria": "Combustíveis", "referencia": "Lei 9.718/98 art. 4º"},
     {"ncm": "27111300", "descricao": "Butano liquefeito", "categoria": "Combustíveis", "referencia": "Lei 9.718/98 art. 4º"},
     {"ncm": "27112900", "descricao": "Outros gases de petróleo liquefeitos", "categoria": "Combustíveis", "referencia": "Lei 9.718/98 art. 4º"},
-    {"ncm": "22071000", "descricao": "Álcool etílico não desnaturado (AEHC)", "categoria": "Combustíveis", "referencia": "Lei 9.718/98 art. 4º"},
+    {"ncm": "22071000", "descricao": "Álcool etílico não desnaturado — uso predominante como combustível (AEHC); o mesmo NCM também cobre álcool não desnaturado destinado a bebidas, cuja tributação segue regime distinto (a classificação NCM não distingue por destinação — verificar o uso real do produto)", "categoria": "Combustíveis", "referencia": "Lei 9.718/98 art. 4º (uso combustível)"},
     {"ncm": "22072000", "descricao": "Álcool etílico desnaturado (AEAC)", "categoria": "Combustíveis", "referencia": "Lei 9.718/98 art. 4º"},
     {"ncm": "38260000", "descricao": "Biodiesel e suas misturas", "categoria": "Combustíveis", "referencia": "Lei 11.116/2005 art. 1º"},
 
@@ -244,7 +244,6 @@ MONOFASICOS = [
     {"ncm": "22042900", "descricao": "Outros vinhos em recipientes > 2L", "categoria": "Bebidas", "referencia": "Lei 9.718/98 (regime especial)"},
     {"ncm": "22043000", "descricao": "Outros mostos de uva", "categoria": "Bebidas", "referencia": "Lei 9.718/98 (regime especial)"},
     {"ncm": "22060000", "descricao": "Outras bebidas fermentadas (sidra, perada)", "categoria": "Bebidas", "referencia": "Lei 9.718/98 (regime especial)"},
-    {"ncm": "22071000", "descricao": "Álcool etílico (bebida)", "categoria": "Bebidas", "referencia": "Lei 9.718/98 (regime especial)"},
     {"ncm": "22082000", "descricao": "Aguardente de vinho ou de bagaço de uva", "categoria": "Bebidas", "referencia": "Lei 9.718/98 (regime especial)"},
     {"ncm": "22083000", "descricao": "Uísques", "categoria": "Bebidas", "referencia": "Lei 9.718/98 (regime especial)"},
     {"ncm": "22084000", "descricao": "Rum e outras aguardentes de cana-de-açúcar", "categoria": "Bebidas", "referencia": "Lei 9.718/98 (regime especial)"},

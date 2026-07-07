@@ -121,8 +121,6 @@ MONOFASICOS = [
     {"ncm": "30045011", "descricao": "Medicamentos com vitamina A", "categoria": "Medicamentos", "referencia": "Lei 10.147/2000 art. 1º"},
     {"ncm": "30049019", "descricao": "Outros medicamentos para uso humano", "categoria": "Medicamentos", "referencia": "Lei 10.147/2000 art. 1º"},
     {"ncm": "30049099", "descricao": "Outros medicamentos (uso humano)", "categoria": "Medicamentos", "referencia": "Lei 10.147/2000 art. 1º"},
-    {"ncm": "30059099", "descricao": "Pastas, gazes e ataduras médicas", "categoria": "Medicamentos", "referencia": "Lei 10.147/2000 art. 1º"},
-    {"ncm": "30061000", "descricao": "Fios cirúrgicos e suturas", "categoria": "Medicamentos", "referencia": "Lei 10.147/2000 art. 1º"},
 
     # PERFUMES E COSMÉTICOS
     {"ncm": "33030010", "descricao": "Perfumes (extratos)", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
@@ -133,7 +131,6 @@ MONOFASICOS = [
     {"ncm": "33043000", "descricao": "Preparações para manicure/pedicure", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
     {"ncm": "33049100", "descricao": "Pós de maquilagem (incluindo compactos)", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
     {"ncm": "33049900", "descricao": "Outros produtos de beleza/maquilagem", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
-    {"ncm": "33051000", "descricao": "Xampus para o cabelo", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
     {"ncm": "33052000", "descricao": "Preparações para ondulação/alisamento", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
     {"ncm": "33053000", "descricao": "Laquês para o cabelo", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
     {"ncm": "33059000", "descricao": "Outras preparações capilares", "categoria": "Perfumes e Cosméticos", "referencia": "Lei 10.147/2000 art. 1º"},
@@ -242,22 +239,35 @@ MONOFASICOS = [
 # --- Regras de monofásico por capítulo/posição NCM ---
 # Complementam a lista MONOFASICOS acima. Aplicadas somente quando o NCM
 # não está listado individualmente (para não duplicar a regra de NCM específico).
+#
+# Cap. 30: a Lei 10.147/2000, art. 1º, I, "a" só atinge as posições 30.01,
+# 30.03 (exceto NCM 3003.90.56) e 30.04 (exceto NCM 3004.90.46), além de
+# subitens pontuais de 30.02 (soros/vacinas) e 3006.30 (reagentes/contrastes
+# de diagnóstico) que não são modelados aqui por exigirem mapeamento preciso
+# ao NCM8 vigente — tratar esses casos manualmente. NÃO inclui 30.05 (gazes,
+# ataduras) nem o restante de 30.06 (cimentos dentários, kits de primeiros
+# socorros etc.), que seguem regime normal.
+#
+# Cap. 33: a mesma lei, art. 1º, I, "b", cobre 33.03 a 33.07 exceto o NCM
+# 3305.10.00 (xampu, expressamente excluído).
 _MONO_CHAPTER_RULES = [
     {
         "chapter": "30",
-        "headings": None,  # todos
+        "headings": {"3001", "3003", "3004"},
+        "excecoes": {"30039056", "30049046"},
         "categoria": "Medicamentos",
-        "referencia": "Lei 10.147/2000 art. 1º",
-        "regra_identificacao": "Monofásico por capítulo — Cap. 30 (Lei 10.147/2000)",
-        "descricao_padrao": "Medicamento — Capítulo 30 NCM",
+        "referencia": "Lei 10.147/2000 art. 1º, I, 'a'",
+        "regra_identificacao": "Monofásico por posição NCM — 30.01, 30.03 e 30.04 (Lei 10.147/2000)",
+        "descricao_padrao": "Medicamento — posições 30.01, 30.03 ou 30.04",
     },
     {
         "chapter": "33",
-        "headings": {"3303", "3304", "3305", "3307"},
+        "headings": {"3303", "3304", "3305", "3306", "3307"},
+        "excecoes": {"33051000"},
         "categoria": "Perfumes e Cosméticos",
-        "referencia": "Lei 10.147/2000 art. 1º",
-        "regra_identificacao": "Monofásico por capítulo — Cap. 33 parcial (Lei 10.147/2000)",
-        "descricao_padrao": "Perfume/Cosmético — Capítulo 33 NCM",
+        "referencia": "Lei 10.147/2000 art. 1º, I, 'b'",
+        "regra_identificacao": "Monofásico por posição NCM — 33.03 a 33.07, exceto 3305.10.00 (Lei 10.147/2000)",
+        "descricao_padrao": "Perfume/Cosmético/Higiene — posições 33.03 a 33.07",
     },
     {
         "chapter": "22",
@@ -319,6 +329,8 @@ def get_monofasico_info(ncm_clean):
         if rule["chapter"] != chapter:
             continue
         if rule["headings"] is not None and heading not in rule["headings"]:
+            continue
+        if ncm_clean in rule.get("excecoes", ()):
             continue
         return True, {
             "ncm": ncm_clean,
@@ -436,15 +448,20 @@ def get_class_trib(ncm_code):
 
 def get_pis_cofins_aliquota_zero(ncm_clean):
     """
-    Alíquota zero de PIS/COFINS para produtos hortícolas, frutas e ovos
-    in natura ou com processo simples de conservação (refrigeração,
-    congelamento, secagem), conforme art. 28, III da Lei nº 10.865/2004.
+    Alíquota zero de PIS/COFINS.
 
-    Abrange todo o Capítulo 7 (hortícolas/legumes/verduras) e Capítulo 8
-    (frutas), além da posição 04.07 (ovos). Não se aplica ao Capítulo 20
-    (conservas, sucos, doces e preparações), ainda que originados de
-    frutas/hortaliças, pois esses produtos já sofreram processo industrial
-    que afasta o benefício.
+    - Art. 28, III da Lei nº 10.865/2004: hortícolas/frutas in natura ou com
+      processo simples de conservação (Capítulos 7 e 8) e ovos (posição
+      04.07). Não se aplica ao Capítulo 20 (conservas, sucos, doces),
+      que já sofreu processo industrial e perde o benefício.
+    - Art. 28, I da Lei nº 10.865/2004: papel destinado à impressão de
+      jornais (posição 48.01). Benefício foi instituído por prazo
+      determinado e prorrogado por legislação posterior — confirmar vigência
+      atual antes de aplicar.
+    - Art. 1º da Lei nº 10.925/2004: adubos/fertilizantes (Capítulo 31,
+      exceto uso veterinário), defensivos agropecuários (posição 38.08),
+      sementes para semeadura (posição 12.09) e mudas para plantio
+      (posição 06.02).
     """
     chapter = ncm_clean[:2]
     heading = ncm_clean[:4]
@@ -458,6 +475,62 @@ def get_pis_cofins_aliquota_zero(ncm_clean):
                 'produtos hortícolas e frutas in natura'
             ),
         }
+
+    if heading == '4801':
+        return {
+            'aliquota_zero': True,
+            'base_legal': 'Art. 28, I da Lei nº 10.865/2004',
+            'nota': (
+                'Alíquota zero conforme art. 28, I da Lei 10.865/2004 - '
+                'papel destinado à impressão de jornais. Benefício foi '
+                'instituído por prazo determinado e prorrogado por '
+                'legislação posterior — confirme a vigência atual antes '
+                'de aplicar'
+            ),
+        }
+
+    if heading == '3808':
+        return {
+            'aliquota_zero': True,
+            'base_legal': 'Art. 1º, II da Lei nº 10.925/2004',
+            'nota': (
+                'Alíquota zero conforme art. 1º, II da Lei 10.925/2004 - '
+                'defensivos agropecuários (posição 38.08)'
+            ),
+        }
+
+    if chapter == '31':
+        return {
+            'aliquota_zero': True,
+            'base_legal': 'Art. 1º, I da Lei nº 10.925/2004',
+            'nota': (
+                'Alíquota zero conforme art. 1º, I da Lei 10.925/2004 - '
+                'adubos/fertilizantes (Capítulo 31), exceto produtos de uso '
+                'veterinário — confirme se este NCM específico se enquadra '
+                'na exceção antes de aplicar'
+            ),
+        }
+
+    if heading == '1209':
+        return {
+            'aliquota_zero': True,
+            'base_legal': 'Art. 1º, III da Lei nº 10.925/2004',
+            'nota': (
+                'Alíquota zero conforme art. 1º, III da Lei 10.925/2004 - '
+                'sementes para semeadura (posição 12.09)'
+            ),
+        }
+
+    if heading == '0602':
+        return {
+            'aliquota_zero': True,
+            'base_legal': 'Art. 1º, III da Lei nº 10.925/2004',
+            'nota': (
+                'Alíquota zero conforme art. 1º, III da Lei 10.925/2004 - '
+                'mudas para plantio (posição 06.02)'
+            ),
+        }
+
     return None
 
 
@@ -610,8 +683,16 @@ def get_ncm(ncm_code):
     is_monofasico, mono_data = get_monofasico_info(ncm_clean)
     pis_cofins_zero = get_pis_cofins_aliquota_zero(ncm_clean)
 
-    pis_cst = "06" if pis_cofins_zero else class_trib["pis_cst"]
-    cofins_cst = "06" if pis_cofins_zero else class_trib["cofins_cst"]
+    if pis_cofins_zero:
+        pis_cst = cofins_cst = "06"
+    elif is_monofasico:
+        # CST "03" (alíquota por unidade de medida) é específico do regime de
+        # bebidas frias (Lei 13.097/2015); os demais setores monofásicos
+        # (medicamentos, perfumaria, combustíveis, veículos, autopeças,
+        # pneus) usam CST "04" (revenda a alíquota zero).
+        pis_cst = cofins_cst = "03" if chapter == "22" else "04"
+    else:
+        pis_cst = cofins_cst = "01"
     pis_aliq_lr = 0.0 if pis_cofins_zero else 1.65
     pis_aliq_lp = 0.0 if pis_cofins_zero else 0.65
     cofins_aliq_lr = 0.0 if pis_cofins_zero else 7.6

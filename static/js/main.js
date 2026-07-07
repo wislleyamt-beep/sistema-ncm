@@ -202,7 +202,7 @@ function renderResult(d) {
   toggleEl('pis-mono', d.tributacao.pis.monofasico);
   toggleEl('pis-zero', d.tributacao.pis.aliquota_zero);
   const pisZeroEl = document.getElementById('pis-zero');
-  if (d.tributacao.pis.aliquota_zero) pisZeroEl.textContent = '🥬 ' + d.tributacao.pis.nota_aliquota_zero;
+  if (d.tributacao.pis.aliquota_zero) pisZeroEl.textContent = '✅ ' + d.tributacao.pis.nota_aliquota_zero;
 
   // COFINS
   const cofLr = d.tributacao.cofins.lucro_real;
@@ -213,7 +213,7 @@ function renderResult(d) {
   toggleEl('cofins-mono', d.tributacao.cofins.monofasico);
   toggleEl('cofins-zero', d.tributacao.cofins.aliquota_zero);
   const cofZeroEl = document.getElementById('cofins-zero');
-  if (d.tributacao.cofins.aliquota_zero) cofZeroEl.textContent = '🥬 ' + d.tributacao.cofins.nota_aliquota_zero;
+  if (d.tributacao.cofins.aliquota_zero) cofZeroEl.textContent = '✅ ' + d.tributacao.cofins.nota_aliquota_zero;
 
   // CST tables
   fillCstTable('cst-pc-saidas', CST_PIS_COFINS_SAIDAS, pisLr.cst);

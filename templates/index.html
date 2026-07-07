@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema NCM — Tributação Completa</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-area">
+        <span class="logo-icon">⚖</span>
+        <div>
+          <div class="logo-title">Sistema NCM</div>
+          <div class="logo-sub">Consulta de Tributação Completa</div>
+        </div>
+      </div>
+      <nav class="top-nav">
+        <button class="nav-btn active" id="btn-tab-consulta" onclick="switchTab('consulta')">
+          <span>🔍</span> Consulta NCM
+        </button>
+        <button class="nav-btn" id="btn-tab-monofasicos" onclick="switchTab('monofasicos')">
+          <span>📋</span> Produtos Monofásicos
+        </button>
+        <button class="nav-btn" id="btn-tab-classtrib" onclick="switchTab('classtrib')">
+          <span>⚡</span> cClassTrib IBS/CBS
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- ===== TAB: CONSULTA NCM ===== -->
+    <div id="tab-consulta" class="tab-panel active">
+
+      <!-- Search bar -->
+      <div class="search-section card">
+        <h2 class="section-title">Consultar NCM</h2>
+        <p class="section-desc">Informe o código NCM (8 dígitos) para obter a tributação completa.</p>
+        <div class="search-row">
+          <input id="ncm-input" class="search-input" type="text" placeholder="Ex: 87032190 ou 8703.21.90"
+            maxlength="11" oninput="maskNcm(this)" onkeydown="if(event.key==='Enter') consultarNcm()" />
+          <button class="btn-primary" onclick="consultarNcm()">
+            <span class="btn-icon">🔍</span> Consultar
+          </button>
+        </div>
+        <div id="search-error" class="error-msg hidden"></div>
+      </div>
+
+      <!-- Spinner -->
+      <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <span>Consultando BrasilAPI...</span>
+      </div>
+
+      <!-- RESULTS -->
+      <div id="result-area" class="hidden">
+
+        <!-- Cabeçalho do produto -->
+        <div class="card product-header">
+          <div class="product-badge" id="badge-monofasico"></div>
+          <div class="product-info">
+            <div class="product-ncm" id="res-ncm-fmt"></div>
+            <div class="product-desc" id="res-desc"></div>
+            <div class="product-meta" id="res-meta"></div>
+          </div>
+          <div class="class-trib-badge" id="res-class-trib"></div>
+        </div>
+
+        <!-- Grid de alíquotas -->
+        <div class="aliquotas-grid">
+          <!-- IPI -->
+          <div class="card aliq-card ipi-card">
+            <div class="aliq-header">
+              <span class="aliq-icon">🏭</span>
+              <span class="aliq-name">IPI</span>
+              <span class="aliq-full">Imposto sobre Produtos Industrializados</span>
+            </div>
+            <div class="aliq-value" id="ipi-aliq">—</div>
+            <div class="aliq-cst">CST: <strong id="ipi-cst">—</strong></div>
+            <div class="aliq-detail" id="ipi-detail"></div>
+          </div>
+
+          <!-- PIS -->
+          <div class="card aliq-card pis-card">
+            <div class="aliq-header">
+              <span class="aliq-icon">💰</span>
+              <span class="aliq-name">PIS</span>
+              <span class="aliq-full">Programa de Integração Social</span>
+            </div>
+            <div class="regime-split">
+              <div class="regime-item">
+                <div class="regime-label">Lucro Real</div>
+                <div class="aliq-value-sm" id="pis-lr">1,65%</div>
+              </div>
+              <div class="regime-item">
+                <div class="regime-label">L. Presumido</div>
+                <div class="aliq-value-sm" id="pis-lp">0,65%</div>
+              </div>
+            </div>
+            <div class="aliq-cst">CST: <strong id="pis-cst">—</strong></div>
+            <div class="mono-tag hidden" id="pis-mono">⚡ Monofásico — Revenda alíquota zero</div>
+          </div>
+
+          <!-- COFINS -->
+          <div class="card aliq-card cofins-card">
+            <div class="aliq-header">
+              <span class="aliq-icon">💼</span>
+              <span class="aliq-name">COFINS</span>
+              <span class="aliq-full">Contribuição para Financiamento da Seguridade Social</span>
+            </div>
+            <div class="regime-split">
+              <div class="regime-item">
+                <div class="regime-label">Lucro Real</div>
+                <div class="aliq-value-sm" id="cofins-lr">7,60%</div>
+              </div>
+              <div class="regime-item">
+                <div class="regime-label">L. Presumido</div>
+                <div class="aliq-value-sm" id="cofins-lp">3,00%</div>
+              </div>
+            </div>
+            <div class="aliq-cst">CST: <strong id="cofins-cst">—</strong></div>
+            <div class="mono-tag hidden" id="cofins-mono">⚡ Monofásico — Revenda alíquota zero</div>
+          </div>
+        </div>
+
+        <!-- ===== SEÇÃO: Reforma Tributária — CST-IBS/CBS e cClassTrib ===== -->
+        <div class="card rt-section" id="rt-classtrib-card">
+          <!-- Cabeçalho -->
+          <div class="rt-header">
+            <div class="rt-header-left">
+              <div class="rt-title-row">
+                <span class="rt-icon">⚡</span>
+                <h3 class="rt-title">Reforma Tributária — CST-IBS/CBS e cClassTrib</h3>
+                <span class="rt-pill">LC 214/2025</span>
+              </div>
+              <p class="rt-motivo" id="rt-motivo"></p>
+            </div>
+            <div class="rt-cst-block" id="rt-cst-block">
+              <div class="rt-cst-label">CST Sugerido</div>
+              <div class="rt-cst-code" id="rt-cst-code">—</div>
+              <div class="rt-cst-desc" id="rt-cst-desc"></div>
+            </div>
+          </div>
+
+          <!-- Base legal -->
+          <div class="rt-base-legal" id="rt-base-legal"></div>
+
+          <!-- Tabela cClassTrib -->
+          <div class="rt-table-header">
+            <div class="rt-table-title">cClassTribs correspondentes a este CST</div>
+            <span class="rt-count-badge" id="rt-ct-count"></span>
+            <button class="rt-toggle-btn" id="rt-toggle-btn" onclick="toggleAllClassTribs()" style="display:none">
+              Ver todos
+            </button>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table rt-ct-table" id="rt-ct-table">
+              <thead>
+                <tr>
+                  <th style="width:110px">cClassTrib</th>
+                  <th>Nome</th>
+                  <th style="width:180px">Tipo Alíquota</th>
+                  <th style="text-align:center;width:90px">Red. IBS</th>
+                  <th style="text-align:center;width:90px">Red. CBS</th>
+                  <th style="text-align:center;width:80px">NF-e</th>
+                  <th style="width:130px">Vigência</th>
+                  <th style="width:110px">Artigo</th>
+                </tr>
+              </thead>
+              <tbody id="rt-ct-tbody"></tbody>
+            </table>
+          </div>
+
+          <!-- Detalhe expandido do destaque -->
+          <div class="rt-destaque-detail" id="rt-destaque-detail"></div>
+        </div>
+
+        <!-- CST Tabs -->
+        <div class="card">
+          <h3 class="card-title">Códigos de Situação Tributária (CST)</h3>
+          <div class="cst-tabs">
+            <button class="cst-tab active" onclick="showCstTab('pis-cofins')">PIS/COFINS</button>
+            <button class="cst-tab" onclick="showCstTab('icms')">ICMS</button>
+            <button class="cst-tab" onclick="showCstTab('ipi')">IPI</button>
+          </div>
+          <div id="cst-pis-cofins" class="cst-content active">
+            <div class="cst-section-title">Saídas / Receitas</div>
+            <table class="data-table cst-table"><thead><tr><th>CST</th><th>Descrição</th></tr></thead><tbody id="cst-pc-saidas"></tbody></table>
+            <div class="cst-section-title" style="margin-top:16px">Entradas / Créditos</div>
+            <table class="data-table cst-table"><thead><tr><th>CST</th><th>Descrição</th></tr></thead><tbody id="cst-pc-entradas"></tbody></table>
+          </div>
+          <div id="cst-icms" class="cst-content">
+            <div class="cst-section-title">Tributação Normal (Regime não Simples)</div>
+            <table class="data-table cst-table"><thead><tr><th>CST</th><th>Descrição</th></tr></thead><tbody id="cst-icms-normal"></tbody></table>
+            <div class="cst-section-title" style="margin-top:16px">Simples Nacional (CSOSN)</div>
+            <table class="data-table cst-table"><thead><tr><th>CSOSN</th><th>Descrição</th></tr></thead><tbody id="cst-icms-sn"></tbody></table>
+          </div>
+          <div id="cst-ipi" class="cst-content">
+            <div class="cst-section-title">Entradas</div>
+            <table class="data-table cst-table"><thead><tr><th>CST</th><th>Descrição</th></tr></thead><tbody id="cst-ipi-entradas"></tbody></table>
+            <div class="cst-section-title" style="margin-top:16px">Saídas</div>
+            <table class="data-table cst-table"><thead><tr><th>CST</th><th>Descrição</th></tr></thead><tbody id="cst-ipi-saidas"></tbody></table>
+          </div>
+        </div>
+
+        <!-- ICMS por Estado -->
+        <div class="card">
+          <div class="card-title-row">
+            <h3 class="card-title">ICMS por Estado</h3>
+            <span class="card-badge">27 UFs + DF</span>
+          </div>
+          <div class="icms-legend">
+            <span class="legend-item"><span class="legend-dot blue"></span> Sul/Sudeste → Norte/NE/CO: 7%</span>
+            <span class="legend-item"><span class="legend-dot green"></span> Sul/Sudeste ↔ Sul/Sudeste: 12%</span>
+            <span class="legend-item"><span class="legend-dot orange"></span> Norte/NE/CO → qualquer: 12%</span>
+            <span class="legend-item"><span class="legend-dot red"></span> Importados: 4%</span>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table icms-table" id="icms-table">
+              <thead>
+                <tr>
+                  <th>UF</th>
+                  <th>Estado</th>
+                  <th>Alíq. Interna</th>
+                  <th>Interestadual (Sul/SE)</th>
+                  <th>Interestadual (Outros)</th>
+                  <th>Importados</th>
+                  <th>Observação</th>
+                </tr>
+              </thead>
+              <tbody id="icms-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ICMS Piauí — Detalhamento -->
+        <div class="card" id="icms-pi-detail-card" style="display:none">
+          <div class="card-title-row">
+            <div>
+              <h3 class="card-title">ICMS Piauí — Alíquota para este Produto</h3>
+              <div style="font-size:.78rem;color:var(--gray-400);margin-top:2px">Vigente desde 01/04/2025</div>
+            </div>
+            <span class="card-badge" style="background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE">Lei nº 8.558/2024</span>
+          </div>
+          <div id="icms-pi-content"></div>
+        </div>
+
+        <!-- Reforma Tributária -->
+        <div class="card reforma-card">
+          <div class="reforma-header">
+            <span class="reforma-icon">⚡</span>
+            <h3 class="card-title" style="margin:0">Reforma Tributária — EC 132/2023 · LC 214/2025</h3>
+          </div>
+          <div class="reforma-grid" id="reforma-grid">
+            <!-- preenchido via JS -->
+          </div>
+        </div>
+
+      </div><!-- /result-area -->
+
+    </div><!-- /tab-consulta -->
+
+
+    <!-- ===== TAB: MONOFÁSICOS ===== -->
+    <div id="tab-monofasicos" class="tab-panel hidden">
+
+      <div class="card">
+        <div class="mono-header-row">
+          <div>
+            <h2 class="section-title">Produtos Monofásicos</h2>
+            <p class="section-desc">Base completa de NCMs sujeitos à tributação monofásica de PIS/COFINS.</p>
+          </div>
+          <div class="mono-stats" id="mono-stats">
+            <div class="stat-pill"><span id="stat-total">0</span> NCMs</div>
+          </div>
+        </div>
+
+        <!-- Barra de ferramentas -->
+        <div class="toolbar">
+          <div class="search-row" style="flex:1">
+            <input id="mono-search" class="search-input" type="text" placeholder="Filtrar por NCM, descrição ou categoria..."
+              oninput="filterMonofasicos()" />
+          </div>
+          <div class="category-filters" id="category-filters"></div>
+        </div>
+
+        <!-- Tabela monofásicos -->
+        <div class="table-wrapper">
+          <table class="data-table" id="mono-table">
+            <thead>
+              <tr>
+                <th>NCM</th>
+                <th>Descrição</th>
+                <th>Categoria</th>
+                <th>Referência Legal</th>
+              </tr>
+            </thead>
+            <tbody id="mono-tbody"></tbody>
+          </table>
+        </div>
+        <div class="table-count" id="mono-count"></div>
+      </div>
+
+      <!-- Upload PDF -->
+      <div class="card pdf-card">
+        <h3 class="card-title">
+          <span class="card-title-icon">📄</span> Importar Lista de Produtos (PDF)
+        </h3>
+        <p class="section-desc">Envie um PDF com lista de NCMs para verificar quais são monofásicos.</p>
+
+        <div class="upload-area" id="upload-area" onclick="document.getElementById('pdf-input').click()"
+          ondragover="event.preventDefault(); this.classList.add('drag-over')"
+          ondragleave="this.classList.remove('drag-over')"
+          ondrop="handleDrop(event)">
+          <div class="upload-icon">☁</div>
+          <div class="upload-text">Clique ou arraste o PDF aqui</div>
+          <div class="upload-hint">Formato: PDF · Máx. 16 MB</div>
+          <input id="pdf-input" type="file" accept=".pdf" style="display:none" onchange="handleFileSelect(event)" />
+        </div>
+
+        <div id="pdf-loading" class="loading hidden">
+          <div class="spinner"></div><span>Processando PDF...</span>
+        </div>
+
+        <!-- Resultado PDF -->
+        <div id="pdf-result" class="hidden">
+          <div class="report-stats">
+            <div class="report-stat blue">
+              <div class="rs-label">Total de NCMs</div>
+              <div class="rs-value" id="rpt-total">0</div>
+            </div>
+            <div class="report-stat green">
+              <div class="rs-label">Monofásicos</div>
+              <div class="rs-value" id="rpt-mono">0</div>
+            </div>
+            <div class="report-stat red">
+              <div class="rs-label">Não Monofásicos</div>
+              <div class="rs-value" id="rpt-nao">0</div>
+            </div>
+            <div class="report-stat purple">
+              <div class="rs-label">% Monofásico</div>
+              <div class="rs-value" id="rpt-pct">0%</div>
+            </div>
+          </div>
+
+          <!-- Nota metodológica -->
+          <div class="report-method-note">
+            <span class="method-icon">🔍</span>
+            <span>Classificação exclusivamente por <strong>código NCM</strong> cruzado com a lista oficial de
+            134 NCMs monofásicos. Nenhuma descrição ou nome de produto é utilizado como critério.</span>
+          </div>
+
+          <div class="report-tables" style="grid-template-columns:1fr">
+            <div>
+              <div class="report-section-title green-title">
+                ✅ NCMs Monofásicos — encontrados na lista oficial
+              </div>
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead><tr><th>NCM (do arquivo)</th><th>Descrição</th><th>Categoria</th><th>Referência Legal</th><th>Regra de Identificação</th></tr></thead>
+                  <tbody id="rpt-mono-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="report-tables" style="grid-template-columns:1fr;margin-top:16px">
+            <div>
+              <div class="report-section-title red-title">
+                ❌ NCMs Não Monofásicos — não encontrados na lista oficial
+              </div>
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead><tr><th>NCM (do arquivo)</th><th>Situação</th></tr></thead>
+                  <tbody id="rpt-nao-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="export-row">
+            <button class="btn-success" onclick="exportExcel()">
+              <span>📊</span> Exportar Relatório em Excel
+            </button>
+            <button class="btn-secondary" onclick="resetPdf()">
+              <span>🔄</span> Nova Consulta
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-monofasicos -->
+
+
+    <!-- ===== TAB: cClassTrib IBS/CBS ===== -->
+    <div id="tab-classtrib" class="tab-panel hidden">
+
+      <!-- CST-IBS/CBS -->
+      <div class="card">
+        <div class="card-title-row">
+          <h2 class="section-title">CST-IBS/CBS — Códigos de Situação Tributária</h2>
+          <span class="card-badge">LC 214/2025</span>
+        </div>
+        <p class="section-desc">Novos códigos de situação tributária do IBS e CBS, substituindo ICMS/ISS e PIS/COFINS.</p>
+        <div class="table-wrapper">
+          <table class="data-table" id="cst-ibs-table">
+            <thead>
+              <tr>
+                <th>CST</th>
+                <th>Descrição</th>
+                <th style="text-align:center">IBS/CBS</th>
+                <th style="text-align:center">Mono.</th>
+                <th style="text-align:center">Redução</th>
+                <th style="text-align:center">Diferimento</th>
+                <th style="text-align:center">Transf. Créd.</th>
+              </tr>
+            </thead>
+            <tbody id="cst-ibs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- cClassTrib completo -->
+      <div class="card">
+        <div class="card-title-row">
+          <h2 class="section-title">cClassTrib — Classificação Tributária IBS/CBS</h2>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span class="card-badge" id="ct-count-badge">—</span>
+            <span class="card-badge" style="background:var(--green-bg);color:var(--green);border-color:#A7F3D0">Planilha oficial 12/12/2025</span>
+          </div>
+        </div>
+        <p class="section-desc">Base completa de classificações tributárias da LC 214/2025 para emissão de documentos fiscais.</p>
+
+        <!-- Filtros -->
+        <div class="toolbar" style="flex-wrap:wrap;gap:10px;margin-bottom:16px">
+          <input id="ct-search" class="search-input" style="max-width:320px" type="text"
+            placeholder="Buscar por código, nome ou descrição..." oninput="filterClassTrib()" />
+          <div class="ct-filters" id="ct-cst-filters"></div>
+          <div class="ct-filters" id="ct-tipo-filters"></div>
+          <label class="mono-filter-toggle">
+            <input type="checkbox" id="ct-mono-only" onchange="filterClassTrib()" />
+            <span>Só monofásicos</span>
+          </label>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table" id="ct-table">
+            <thead>
+              <tr>
+                <th>cClassTrib</th>
+                <th>CST-IBS/CBS</th>
+                <th>Nome</th>
+                <th>Tipo Alíquota</th>
+                <th style="text-align:center">%Red IBS</th>
+                <th style="text-align:center">%Red CBS</th>
+                <th style="text-align:center">Flags</th>
+                <th>Vigência</th>
+                <th>LC 214/25</th>
+              </tr>
+            </thead>
+            <tbody id="ct-tbody"></tbody>
+          </table>
+        </div>
+        <div class="table-count" id="ct-table-count"></div>
+      </div>
+
+      <!-- Detalhes (modal-like expandable) -->
+      <div id="ct-detail-panel" class="card ct-detail hidden">
+        <div class="ct-detail-header">
+          <div>
+            <span class="ct-code-big" id="ct-detail-code"></span>
+            <span class="ct-detail-name" id="ct-detail-name"></span>
+          </div>
+          <button class="btn-secondary" onclick="closeDetail()" style="padding:0 12px;height:34px">✕ Fechar</button>
+        </div>
+        <div class="ct-detail-body" id="ct-detail-body"></div>
+      </div>
+
+    </div><!-- /tab-classtrib -->
+
+  </main>
+
+  <footer class="site-footer">
+    <div>Sistema NCM · Tributação Completa · Dados: BrasilAPI + TIPI + Legislação Vigente</div>
+    <div>LC 214/2025 · EC 132/2023 · Lei 9.718/98 · Lei 10.147/2000 · Lei 10.485/2002</div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

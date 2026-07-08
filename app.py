@@ -1604,64 +1604,109 @@ def get_classtrib_suggestion(ncm_clean, is_monofasico, chapter, reforma_info):
     reducao   = reforma_info.get("reducao_aliquota")
     is_incide = reforma_info.get("is", {}).get("incide", False)
 
-    # ---- Regras de enquadramento (ordem de prioridade) ----
-    # 1. Isenção (cesta básica)
+    # ---- 1. Isenção (cesta básica / hortifrúti) ----
+    # A tabela cClassTrib carregada só tem UMA linha com CST 400 (transporte
+    # público), sem nenhuma entrada de isenção de alimentos sob esse CST —
+    # por isso NUNCA cravamos um código de 6 dígitos aqui. O mecanismo real
+    # de cesta básica/hortifrúti na LC 214/2025 é redução de 100% sob CST
+    # 200 (Anexo I / Anexo XV), mas a codificação exata já mudou de versão
+    # várias vezes, então exibimos apenas um aviso para o usuário confirmar.
     if isencao:
-        cst = "400"
-        motivo = f"Produto com isenção de IBS e CBS — {reforma_info['isencao']}"
-        base_legal = "Arts. 120-127 da LC 214/2025"
-        destaque_code = next(
-            (r["cClassTrib"] for r in CLASSTRIB_DATA if r["cst_ibs_cbs"] == "400"), "400001"
-        )
+        return {
+            "cst_sugerido": "200/400",
+            "desc_cst": "Vendas de produtos destinados à alimentação humana (Anexo I ou XV da LC 214/2025)",
+            "motivo": f"Produto com isenção/redução total de IBS e CBS — {reforma_info['isencao']}",
+            "base_legal": "Arts. 9º-10 e 120-127 da LC 214/2025 (Cesta Básica Nacional / Hortifrúti)",
+            "classtrib_destaque": None,
+            "classtrib_list": [],
+            "aviso_confirmacao": (
+                "Código cClassTrib específico sujeito a confirmação - "
+                "consulte a tabela vigente no Portal Nacional da NF-e "
+                "(Documentos > Diversos) antes de emitir a nota fiscal."
+            ),
+        }
 
-    # 2. Alíquota reduzida (medicamentos, educação, etc.) — vem antes de monofásico
-    elif reducao:
-        cst = "200"
-        motivo = f"Produto com redução de {reducao:.0f}% nas alíquotas de referência do IBS e CBS."
-        base_legal = "Arts. 128-142 da LC 214/2025"
-        target_red = reducao / 100.0
-        destaque_code = next(
-            (r["cClassTrib"] for r in CLASSTRIB_DATA
-             if r["cst_ibs_cbs"] == "200" and abs(r.get("pRedCBS", 0) - target_red) < 0.01),
-            next((r["cClassTrib"] for r in CLASSTRIB_DATA if r["cst_ibs_cbs"] == "200"), "200001")
-        )
+    aviso_confirmacao = None
 
-    # 3. Combustíveis monofásicos
+    # 2. Alíquota reduzida (hoje só medicamentos, Capítulo 30) — vem antes
+    # de monofásico. pRedCBS na tabela já está em pontos percentuais
+    # (60.0 = 60%), não em fração (0.6) — antes a comparação dividia
+    # `reducao` por 100, o que nunca batia com nenhuma linha e sempre caía
+    # no primeiro item de CST 200 (zonas de processamento de exportação,
+    # nada a ver com medicamento). Corrigido para comparar direto, e
+    # com filtro por palavra-chave já que várias linhas de CST 200
+    # compartilham a mesma redução de 60% para categorias bem diferentes
+    # (educação, saúde, medicamentos, agropecuário etc.).
+    if reducao:
+        destaque_code = None
+        if chapter == "30":
+            destaque_code = next(
+                (r["cClassTrib"] for r in CLASSTRIB_DATA
+                 if r["cst_ibs_cbs"] == "200"
+                 and abs(r.get("pRedCBS", 0) - reducao) < 0.01
+                 and "medicamento" in r["nome"].lower()),
+                None
+            )
+        if destaque_code:
+            cst = "200"
+            motivo = f"Produto com redução de {reducao:.0f}% nas alíquotas de referência do IBS e CBS."
+            base_legal = "Arts. 128-142 da LC 214/2025"
+        else:
+            # Sem correspondência confiável na tabela carregada — não
+            # inventamos um cClassTrib, caímos para tributação integral.
+            cst = "000"
+            destaque_code = "000001"
+            motivo = (
+                f"Produto com redução de {reducao:.0f}% nas alíquotas de "
+                "referência do IBS e CBS, mas nenhum cClassTrib específico "
+                "foi encontrado com confiança na tabela carregada — "
+                "exibindo tributação integral como padrão seguro."
+            )
+            base_legal = "Arts. 1-10 da LC 214/2025"
+            aviso_confirmacao = "Confirme o cClassTrib específico na tabela vigente antes de emitir a nota fiscal."
+
+    # 3. Combustíveis monofásicos — único caso com cClassTrib 620 real na
+    # tabela carregada (as 6 linhas de CST 620 são todas sobre combustível).
     elif chapter == "27" and is_monofasico:
         cst = "620"
         motivo = "Combustível sujeito à tributação monofásica de IBS e CBS."
         base_legal = "Arts. 154-168 da LC 214/2025"
         destaque_code = "620001"
 
-    # 4. Bebidas (regime especial/monofásico)
-    elif chapter == "22" and is_monofasico:
-        cst = "620"
-        motivo = "Bebida sujeita à tributação monofásica de IBS e CBS."
-        base_legal = "Arts. 154-168 da LC 214/2025"
-        destaque_code = "620001"
-
-    # 5. Demais monofásicos (veículos, autopeças, perfumes, etc.)
+    # 4. Demais monofásicos no regime atual (bebidas, veículos, autopeças,
+    # perfumaria etc.) — a tabela carregada NÃO tem nenhum cClassTrib de
+    # monofásico para essas categorias fora de combustíveis (verificado:
+    # as 6 linhas de CST 620 mencionam só "combustíveis"). Reaproveitar
+    # "620001" aqui mostrava "Tributação monofásica sobre combustíveis"
+    # para carro, xampu e cerveja — mesmo tipo de bug do transporte
+    # público, só que noutro CST. Caímos para tributação integral.
     elif is_monofasico:
-        cst = "620"
-        motivo = "Produto com tributação monofásica: o IBS e CBS são recolhidos pelo fabricante/importador, cobrindo toda a cadeia."
-        base_legal = "Arts. 154-168 da LC 214/2025"
-        destaque_code = "620001"
+        cst = "000"
+        motivo = (
+            "Produto com tributação monofásica no regime atual (PIS/COFINS). "
+            "A tabela cClassTrib carregada não tem um cClassTrib específico "
+            "de monofásico para esta categoria fora de combustíveis — "
+            "exibindo tributação integral como padrão seguro."
+        )
+        base_legal = "Arts. 1-10 da LC 214/2025"
+        destaque_code = "000001"
+        aviso_confirmacao = "Confirme o tratamento correto na tabela vigente antes de emitir a nota fiscal."
 
-    # 6. Tabaco — integral + IS
+    # 5. Tabaco — integral + IS
     elif chapter == "24":
         cst = "000"
         motivo = "Tributação integral pelo IBS/CBS. Produto sujeito adicionalmente ao Imposto Seletivo."
         base_legal = "Arts. 1-10 da LC 214/2025 (IBS/CBS) + Art. 225 (IS)"
         destaque_code = "000001"
 
-    # 7. Produtos com Imposto Seletivo — tributação integral + IS
+    # 6. Produtos com Imposto Seletivo — tributação integral + IS
     elif is_incide:
         cst = "000"
         motivo = "Tributação integral pelo IBS/CBS. Imposto Seletivo incide adicionalmente sobre este produto."
         base_legal = "Arts. 1-10 da LC 214/2025 (IBS/CBS) + Arts. 225-263 (IS)"
         destaque_code = "000001"
 
-    # 8. Tributação normal
+    # 7. Tributação normal
     else:
         cst = "000"
         motivo = "Tributação integral pelo IBS e CBS à alíquota padrão de referência."
@@ -1686,6 +1731,7 @@ def get_classtrib_suggestion(ncm_clean, is_monofasico, chapter, reforma_info):
         "base_legal": base_legal,
         "classtrib_destaque": destaque_code,
         "classtrib_list": classtrib_for_cst,
+        "aviso_confirmacao": aviso_confirmacao,
     }
 
 

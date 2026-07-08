@@ -279,6 +279,14 @@ function renderClassTribSection(sugestao) {
     ? `📖 ${sugestao.base_legal}`
     : '';
 
+  const avisoEl = document.getElementById('rt-aviso-confirmacao');
+  if (sugestao.aviso_confirmacao) {
+    avisoEl.innerHTML = `<span style="font-size:1.1rem;line-height:1.2">⚠</span><span>${sugestao.aviso_confirmacao}</span>`;
+    avisoEl.classList.remove('hidden');
+  } else {
+    avisoEl.classList.add('hidden');
+  }
+
   // CST block color por tipo
   _setCstBlockColor(sugestao.cst_sugerido);
 
@@ -337,10 +345,10 @@ function _renderRtTable(destaqueCode) {
       : '—';
 
     const redIbs = r.pRedIBS > 0
-      ? `<span class="rt-pct-val">${(r.pRedIBS * 100).toFixed(0)}%</span>`
+      ? `<span class="rt-pct-val">${r.pRedIBS.toFixed(0)}%</span>`
       : `<span class="rt-pct-zero">—</span>`;
     const redCbs = r.pRedCBS > 0
-      ? `<span class="rt-pct-val">${(r.pRedCBS * 100).toFixed(0)}%</span>`
+      ? `<span class="rt-pct-val">${r.pRedCBS.toFixed(0)}%</span>`
       : `<span class="rt-pct-zero">—</span>`;
 
     const nfe = r.ind_nfe
@@ -1122,8 +1130,8 @@ function showDetail(code) {
   document.getElementById('ct-detail-code').textContent = item.cClassTrib;
   document.getElementById('ct-detail-name').textContent = item.nome;
 
-  const redIbs = item.pRedIBS > 0 ? `${(item.pRedIBS * 100).toFixed(0)}%` : '0%';
-  const redCbs = item.pRedCBS > 0 ? `${(item.pRedCBS * 100).toFixed(0)}%` : '0%';
+  const redIbs = item.pRedIBS > 0 ? `${item.pRedIBS.toFixed(0)}%` : '0%';
+  const redCbs = item.pRedCBS > 0 ? `${item.pRedCBS.toFixed(0)}%` : '0%';
 
   const docFlags = [
     ['NF-e', item.ind_nfe],

@@ -1226,6 +1226,8 @@ def get_pis_cofins_aliquota_zero(ncm_clean):
                 'aliquota_zero': True,
                 'base_legal': rule['base_legal_fixa'],
                 'nota': rule['nota_fixa'],
+                'modulo': rule['modulo'],
+                'inciso': rule.get('inciso'),
             }
 
         base_legal = f"Lei 10.925/2004, art. 1º, inciso {rule['inciso']}"
@@ -1236,6 +1238,8 @@ def get_pis_cofins_aliquota_zero(ncm_clean):
             'aliquota_zero': True,
             'base_legal': base_legal,
             'nota': nota,
+            'modulo': rule['modulo'],
+            'inciso': rule['inciso'],
         }
 
     return None
@@ -1527,6 +1531,32 @@ def get_ncm(ncm_code):
     return jsonify(result)
 
 
+# Incisos da Cesta Básica (Lei 10.925/2004) que NÃO são isenção total para
+# fins de LC 214/2025: são insumos agropecuários/veterinários (I-IV, VI,
+# VII, X) ou produtos de higiene (XXVI, XXVII), que na tabela cClassTrib
+# correspondem a Anexos de redução parcial (Anexo VIII/IX, 60%), não ao
+# Anexo I/XV de isenção total (100%).
+_REFORMA_ISENCAO_INCISOS_EXCLUIDOS = {"I", "II", "III", "IV", "VI", "VII", "X", "XXVI", "XXVII"}
+
+
+def _elegivel_isencao_reforma(aliq_zero_info):
+    """
+    Decide se um resultado de get_pis_cofins_aliquota_zero corresponde a
+    isenção total (Anexo I "cesta básica" ou Anexo XV "hortifrúti") para
+    fins da LC 214/2025, e não a uma categoria de redução parcial
+    (insumos agropecuários, higiene) que usa a mesma alíquota zero de
+    PIS/COFINS mas um Anexo diferente na reforma.
+    """
+    if not aliq_zero_info:
+        return False
+    modulo = aliq_zero_info.get("modulo")
+    if modulo == "Hortifrúti":
+        return True
+    if modulo == "Cesta Básica":
+        return aliq_zero_info.get("inciso") not in _REFORMA_ISENCAO_INCISOS_EXCLUIDOS
+    return False
+
+
 def get_reforma_tributaria_info(ncm_clean, is_monofasico):
     chapter = ncm_clean[:2]
     info = {
@@ -1571,12 +1601,21 @@ def get_reforma_tributaria_info(ncm_clean, is_monofasico):
         info["cbs"]["aliquota_efetiva"] = 3.52
         info["ibs"]["aliquota_efetiva"] = 7.08
 
-    # Alimentos básicos
-    elif chapter in ["01", "02", "03", "04", "07", "08", "10", "11"]:
-        info["isencao"] = "Cesta básica nacional - isenção total CBS/IBS"
+    # Alimentos básicos / hortifrúti — dirigido pela mesma regra de
+    # alíquota zero de PIS/COFINS (Lei 10.925/2004 e 10.865/2004), que já
+    # modela com precisão quais NCMs entram (exclui queijo ralado/fundido,
+    # leite condensado etc.) em vez de um chapter list genérico, que tanto
+    # deixava de fora capítulos inteiros (ex.: açúcar, cap. 17) quanto
+    # incluía capítulos inteiros que têm exceções dentro deles (ex.:
+    # queijo ralado no cap. 04). Insumos agropecuários (incisos I-IV, VI,
+    # VII, X) e higiene (XXVI, XXVII) ficam de fora daqui porque, na
+    # tabela cClassTrib real, correspondem a Anexos de REDUÇÃO parcial
+    # (Anexo VIII/IX, 60%), não de isenção total (Anexo I/XV).
+    elif _elegivel_isencao_reforma(get_pis_cofins_aliquota_zero(ncm_clean)):
+        info["isencao"] = "Cesta básica nacional/hortifrúti - isenção total CBS/IBS"
         info["cbs"]["aliquota_efetiva"] = 0.0
         info["ibs"]["aliquota_efetiva"] = 0.0
-        info["observacoes"].append("Produto da cesta básica: alíquota zero CBS e IBS")
+        info["observacoes"].append("Produto da cesta básica/hortifrúti: alíquota zero CBS e IBS")
 
     # Veículos
     elif chapter == "87":

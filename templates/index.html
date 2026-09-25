@@ -27,6 +27,9 @@
         <button class="nav-btn" id="btn-tab-classtrib" onclick="switchTab('classtrib')">
           <span>⚡</span> cClassTrib IBS/CBS
         </button>
+        <button class="nav-btn" id="btn-tab-operacoes" onclick="switchTab('operacoes')">
+          <span>🧾</span> Operações Questor
+        </button>
       </nav>
     </div>
   </header>
@@ -71,6 +74,36 @@
         </div>
 
         <div class="icms-aviso hidden" id="mono-aviso"></div>
+
+        <!-- Operação Questor — Simples Nacional -->
+        <div class="card opq-card" id="opq-card">
+          <div class="opq-head">
+            <div>
+              <div class="opq-kicker">Operação Questor · Simples Nacional (grupo 27)</div>
+              <div class="opq-op" id="opq-op">—</div>
+              <div class="opq-origem" id="opq-origem"></div>
+            </div>
+            <div class="opq-code-block">
+              <div class="opq-code-label">Código</div>
+              <div class="opq-code" id="opq-code">—</div>
+            </div>
+          </div>
+          <div class="opq-dims">
+            <div class="opq-dim">
+              <div class="opq-dim-label">PIS/COFINS</div>
+              <div class="opq-dim-value" id="opq-pc">—</div>
+            </div>
+            <div class="opq-dim">
+              <div class="opq-dim-label">ICMS Piauí</div>
+              <div class="opq-dim-value" id="opq-icms">—</div>
+              <div class="opq-dim-legal" id="opq-icms-legal"></div>
+            </div>
+          </div>
+          <div id="opq-avisos"></div>
+          <div class="opq-actions">
+            <button class="btn-secondary opq-btn" onclick="abrirCadastroComNcm()">✏️ Cadastrar/corrigir operação deste NCM</button>
+          </div>
+        </div>
 
         <!-- Grid de alíquotas -->
         <div class="aliquotas-grid">
@@ -369,7 +402,7 @@
               </div>
               <div class="table-wrapper">
                 <table class="data-table">
-                  <thead><tr><th>NCM (do arquivo)</th><th>Descrição</th><th>Categoria</th><th>Referência Legal</th><th>Regra de Identificação</th></tr></thead>
+                  <thead><tr><th>NCM (do arquivo)</th><th>Descrição</th><th>Categoria</th><th>Referência Legal</th><th>Regra de Identificação</th><th>Operação Questor</th></tr></thead>
                   <tbody id="rpt-mono-tbody"></tbody>
                 </table>
               </div>
@@ -383,7 +416,7 @@
               </div>
               <div class="table-wrapper">
                 <table class="data-table">
-                  <thead><tr><th>NCM (do arquivo)</th><th>Situação</th></tr></thead>
+                  <thead><tr><th>NCM (do arquivo)</th><th>Situação</th><th>Operação Questor</th></tr></thead>
                   <tbody id="rpt-nao-tbody"></tbody>
                 </table>
               </div>
@@ -489,6 +522,77 @@
       </div>
 
     </div><!-- /tab-classtrib -->
+
+
+    <!-- ===== TAB: OPERAÇÕES QUESTOR ===== -->
+    <div id="tab-operacoes" class="tab-panel hidden">
+
+      <div class="card">
+        <div class="card-title-row">
+          <div>
+            <h2 class="section-title">Operações Questor por NCM</h2>
+            <p class="section-desc">Cadastre a operação do Questor (grupo 27 · Simples Nacional) para NCMs que a regra automática não segrega corretamente.
+              Aceita NCM completo (8 dígitos) ou prefixo (4 a 7 dígitos). Vale o cadastro mais específico.</p>
+          </div>
+          <span class="card-badge" id="opq-count-badge">—</span>
+        </div>
+
+        <div class="icms-aviso hidden" id="opq-persist-aviso"></div>
+
+        <div class="opq-form">
+          <input id="opq-f-ncm" class="search-input" type="text" placeholder="NCM ou prefixo (ex.: 3004.90.37)" maxlength="11" oninput="maskNcm(this)" />
+          <select id="opq-f-op" class="search-input opq-select"></select>
+          <input id="opq-f-obs" class="search-input" type="text" placeholder="Observação / base legal (opcional)" maxlength="300" />
+          <button class="btn-primary" onclick="salvarCadastroOperacao()">💾 Salvar</button>
+        </div>
+        <div id="opq-f-msg" class="error-msg hidden"></div>
+
+        <details class="opq-lote">
+          <summary>Cadastrar em lote (colar lista)</summary>
+          <p class="section-desc" style="margin-top:8px">Uma linha por NCM: <code>NCM;código</code> ou <code>NCM;código;observação</code>.
+            O código pode ser o interno (ex.: <code>70075</code>) ou o da operação (ex.: <code>1.02.11</code>).</p>
+          <textarea id="opq-lote-txt" class="opq-textarea" rows="6" placeholder="3004.90.37;70076;Isenção Conv. 162/94&#10;3004.90.99;70075"></textarea>
+          <button class="btn-primary" style="margin-top:8px" onclick="salvarLoteOperacoes()">💾 Salvar lote</button>
+        </details>
+
+        <div class="toolbar" style="margin-top:16px">
+          <input id="opq-search" class="search-input" style="max-width:320px" type="text" placeholder="Filtrar cadastro..." oninput="renderCadastroOperacoes()" />
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:120px">NCM</th>
+                <th>Operação cadastrada</th>
+                <th>Regra automática</th>
+                <th>Observação</th>
+                <th style="width:130px">Atualizado</th>
+                <th style="width:70px"></th>
+              </tr>
+            </thead>
+            <tbody id="opq-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">Como a regra automática decide</h3>
+        <table class="data-table" style="margin-top:10px">
+          <thead><tr><th>PIS/COFINS</th><th>ICMS Piauí</th><th>Operação sugerida</th></tr></thead>
+          <tbody>
+            <tr><td>Normal</td><td>Tributado</td><td>2601 · 1.01 - Revenda de Mercadoria Sem Sub. Tributária</td></tr>
+            <tr><td>Normal</td><td>Substituição tributária</td><td>2603 · 1.02.01 - Revenda de Mercadoria Com Sub. Tributária - ICMS</td></tr>
+            <tr><td>Normal</td><td>Isento</td><td>2616 · 1.04.01 - Revenda de Mercadoria Com Isenção - ICMS</td></tr>
+            <tr><td>Normal</td><td>Imune</td><td>70070 · 1.04.02 - Revenda de Mercadoria Com Imunidade - ICMS</td></tr>
+            <tr><td>Monofásico</td><td>Tributado</td><td>2618 · 1.05.01 - Revenda de Mercadoria Tributação Monofásica PIS e COFINS</td></tr>
+            <tr><td>Monofásico</td><td>Substituição tributária</td><td>70075 · 1.02.11 - Com Sub. Tributária de ICMS e Tributação Monofásica PIS e COFINS</td></tr>
+            <tr><td>Monofásico</td><td>Isento</td><td>70076 · 1.05.02 - Tributação Monofásica PIS e COFINS e Isenção de ICMS</td></tr>
+          </tbody>
+        </table>
+        <p class="section-desc" style="margin-top:10px">Reduções de alíquota (1.98.01 / 1.99.01), exterior (1.03) e operações de ST de PIS/COFINS (1.02.02 a 1.02.07) só entram por cadastro manual.</p>
+      </div>
+
+    </div><!-- /tab-operacoes -->
 
   </main>
 

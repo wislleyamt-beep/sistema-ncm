@@ -1347,3 +1347,40 @@ body {
   .aliq-value { font-size: 1.7rem; }
   .product-ncm { font-size: 1.2rem; }
 }
+
+/* ============================================================
+   Operação Questor (Simples Nacional)
+   ============================================================ */
+.opq-card { border-left: 5px solid var(--purple-lt); }
+.opq-card.origem-cadastro { border-left-color: var(--green-lt); }
+.opq-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+.opq-kicker { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--purple); font-weight: 700; }
+.opq-op { font-size: 1.15rem; font-weight: 700; color: var(--gray-900); margin-top: 4px; }
+.opq-origem { font-size: .78rem; color: var(--gray-600); margin-top: 4px; }
+.opq-code-block { text-align: center; background: var(--purple-bg); border-radius: var(--radius); padding: 8px 16px; min-width: 110px; }
+.opq-card.origem-cadastro .opq-code-block { background: var(--green-bg); }
+.opq-code-label { font-size: .68rem; color: var(--gray-600); text-transform: uppercase; }
+.opq-code { font-size: 1.5rem; font-weight: 800; color: var(--purple); font-variant-numeric: tabular-nums; }
+.opq-card.origem-cadastro .opq-code { color: var(--green); }
+.opq-dims { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 14px; }
+.opq-dim { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 10px 12px; }
+.opq-dim-label { font-size: .7rem; color: var(--gray-400); text-transform: uppercase; font-weight: 600; }
+.opq-dim-value { font-weight: 700; color: var(--gray-900); margin-top: 2px; }
+.opq-dim-legal { font-size: .74rem; color: var(--gray-600); margin-top: 3px; }
+.opq-card .icms-aviso { margin-top: 12px; }
+.opq-actions { margin-top: 12px; }
+.opq-btn { height: 34px; padding: 0 12px; font-size: .82rem; }
+.opq-form { display: grid; grid-template-columns: 200px minmax(260px, 2fr) minmax(180px, 1fr) auto; gap: 8px; margin-top: 12px; }
+.opq-select { background: #fff; }
+.opq-lote { margin-top: 14px; }
+.opq-lote summary { cursor: pointer; font-weight: 600; color: var(--blue-lt); }
+.opq-textarea { width: 100%; font-family: ui-monospace, monospace; font-size: .85rem; padding: 10px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); }
+.opq-divergente { color: var(--orange); font-weight: 600; }
+.opq-del { background: none; border: 1px solid var(--gray-300); border-radius: 6px; cursor: pointer; padding: 3px 8px; }
+.opq-del:hover { background: var(--red-bg); border-color: var(--red-lt); }
+.opq-cell-op { font-size: .8rem; }
+.opq-cell-op .opq-src { display: block; font-size: .7rem; color: var(--gray-400); }
+.ok-msg { background: var(--green-bg); color: var(--green); border-radius: var(--radius); padding: 8px 12px; margin-top: 8px; font-size: .85rem; }
+@media (max-width: 760px) {
+  .opq-form { grid-template-columns: 1fr; }
+}

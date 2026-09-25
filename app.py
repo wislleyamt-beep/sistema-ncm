@@ -8,6 +8,7 @@ from datetime import datetime
 from openpyxl import load_workbook, Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
+import operacoes_questor as opq
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
@@ -1524,6 +1525,10 @@ def get_ncm(ncm_code):
         "reforma_tributaria": get_reforma_tributaria_info(ncm_clean, is_monofasico),
     }
 
+    result["operacao_questor"] = opq.sugerir_operacao(
+        ncm_clean, is_monofasico, result["icms_piaui"], pis_cofins_zero
+    )
+
     reforma = result["reforma_tributaria"]
     result["classtrib_sugestao"] = get_classtrib_suggestion(
         ncm_clean, is_monofasico, chapter, reforma
@@ -1811,6 +1816,102 @@ def get_cst_ibs_cbs():
     return jsonify(CST_IBS_CBS_DATA)
 
 
+# ---------------------------------------------------------------------------
+# Operações Questor (Simples Nacional) — cadastro NCM -> operação
+# ---------------------------------------------------------------------------
+def _admin_ok():
+    token = os.environ.get("ADMIN_TOKEN", "").strip()
+    return (not token) or request.headers.get("X-Admin-Token", "") == token
+
+
+@app.route('/api/operacoes-questor')
+def listar_operacoes_questor():
+    return jsonify(opq.OPERACOES_QUESTOR)
+
+
+@app.route('/api/operacoes-ncm', methods=['GET'])
+def listar_cadastro_operacoes():
+    try:
+        dados = opq.store().all()
+    except Exception as e:
+        return jsonify({"error": f"Erro ao ler cadastro: {e}"}), 500
+    itens = []
+    for ncm, v in sorted(dados.items()):
+        op = opq.OPERACOES_IDX.get(v.get("codigo"), {})
+        # compara com a regra automática quando o cadastro é de NCM completo
+        auto = None
+        if len(ncm) == 8:
+            is_mono, _ = get_monofasico_info(ncm)
+            sug = opq.sugerir_operacao(ncm, is_mono, get_icms_piaui(ncm),
+                                       get_pis_cofins_aliquota_zero(ncm), overrides={})
+            auto = sug["automatica"]
+        itens.append({
+            "ncm": ncm,
+            "ncm_formatado": format_ncm(ncm) if len(ncm) == 8 else ncm,
+            "codigo": v.get("codigo"),
+            "operacao": op.get("operacao", "?"),
+            "descricao": op.get("descricao", "Operação desconhecida"),
+            "observacao": v.get("observacao", ""),
+            "atualizado_em": v.get("atualizado_em", ""),
+            "automatica": auto,
+        })
+    return jsonify({
+        "itens": itens,
+        "persistente": opq.store().persistente,
+        "protegido": bool(os.environ.get("ADMIN_TOKEN", "").strip()),
+    })
+
+
+@app.route('/api/operacoes-ncm', methods=['POST'])
+def salvar_cadastro_operacoes():
+    if not _admin_ok():
+        return jsonify({"error": "Senha de administrador inválida."}), 401
+    body = request.get_json(silent=True) or {}
+    itens = body.get("itens")
+    if itens is None:
+        itens = [body]
+    salvos, erros = 0, []
+    for i, item in enumerate(itens, start=1):
+        ncm, codigo, erro = opq.validar_cadastro(item.get("ncm"), item.get("codigo"))
+        if erro:
+            erros.append(f"Linha {i} ({item.get('ncm', '')}): {erro}")
+            continue
+        try:
+            opq.store().upsert(ncm, codigo, (item.get("observacao") or "").strip()[:300])
+            salvos += 1
+        except Exception as e:
+            erros.append(f"Linha {i}: erro ao gravar ({e})")
+    status = 200 if salvos or not erros else 400
+    return jsonify({"salvos": salvos, "erros": erros}), status
+
+
+@app.route('/api/operacoes-ncm/<ncm>', methods=['DELETE'])
+def excluir_cadastro_operacoes(ncm):
+    if not _admin_ok():
+        return jsonify({"error": "Senha de administrador inválida."}), 401
+    ncm = re.sub(r'\D', '', ncm)
+    try:
+        opq.store().delete(ncm)
+    except Exception as e:
+        return jsonify({"error": f"Erro ao excluir: {e}"}), 500
+    return jsonify({"ok": True})
+
+
+def _operacao_para_ncm(ncm, overrides):
+    is_mono, _ = get_monofasico_info(ncm)
+    sug = opq.sugerir_operacao(ncm, is_mono, get_icms_piaui(ncm),
+                               get_pis_cofins_aliquota_zero(ncm), overrides=overrides)
+    op = sug.get("operacao") or {}
+    return {
+        "operacao_codigo": op.get("codigo", ""),
+        "operacao_rotulo": op.get("rotulo", "Definir manualmente"),
+        "operacao_origem": sug["origem"],
+        "icms_situacao": sug["icms_label"],
+        "pis_cofins": "Monofásico" if is_mono else "Normal",
+        "operacao_aviso": " ".join(sug["avisos"]),
+    }
+
+
 def _extrair_ncms_do_texto(texto):
     """
     Extrai NCMs de um texto bruto usando dois padrões distintos.
@@ -1914,17 +2015,24 @@ def upload_pdf():
     monofasicos_encontrados = []
     nao_monofasicos = []
 
+    try:
+        overrides = opq.store().all()
+    except Exception:
+        overrides = {}
+
     for ncm in ncms_extraidos:
         is_mono, entrada = get_monofasico_info(ncm)
+        op_info = _operacao_para_ncm(ncm, overrides)
         if is_mono:
             entrada = dict(entrada)
+            entrada["ncm"] = ncm
             entrada["ncm_formatado"] = format_ncm(ncm)
+            entrada.update(op_info)
             monofasicos_encontrados.append(entrada)
         else:
-            nao_monofasicos.append({
-                "ncm": ncm,
-                "ncm_formatado": format_ncm(ncm),
-            })
+            item = {"ncm": ncm, "ncm_formatado": format_ncm(ncm)}
+            item.update(op_info)
+            nao_monofasicos.append(item)
 
     total = len(ncms_extraidos)
     percentual = round(len(monofasicos_encontrados) / total * 100, 2) if total else 0.0
@@ -2043,11 +2151,62 @@ def export_excel():
     ws_nao.row_dimensions[1].height = 25
 
     for i, ncm in enumerate(data.get("nao_monofasicos", []), start=2):
+        if isinstance(ncm, dict):
+            ncm = ncm.get("ncm_formatado") or ncm.get("ncm", "")
         ws_nao.cell(row=i, column=1, value=ncm).border = thin_border
         ws_nao.cell(row=i, column=2, value="Tributação Normal (não monofásico)").border = thin_border
         if i % 2 == 0:
             ws_nao.cell(row=i, column=1).fill = alt_fill
             ws_nao.cell(row=i, column=2).fill = alt_fill
+
+    # --- Aba Operações Questor (Simples Nacional) ---
+    # Recalcula no servidor (não confia no JSON do navegador) para refletir o
+    # cadastro manual mais recente.
+    ncms_todos = []
+    for item in data.get("monofasicos", []) + data.get("nao_monofasicos", []):
+        n = item.get("ncm") if isinstance(item, dict) else item
+        n = re.sub(r'\D', '', str(n or ''))
+        if len(n) == 8:
+            ncms_todos.append(n)
+    ncms_todos = sorted(set(ncms_todos))
+
+    try:
+        overrides = opq.store().all()
+    except Exception:
+        overrides = {}
+
+    ws_op = wb.create_sheet("Operações Questor", 1)
+    header_fill_purple = PatternFill("solid", fgColor="5B21B6")
+    op_headers = ["NCM", "PIS/COFINS", "ICMS (PI)", "Cód. Operação", "Operação Questor",
+                  "Origem", "Avisos"]
+    op_widths = [14, 14, 30, 14, 70, 16, 80]
+    for col, (h, w) in enumerate(zip(op_headers, op_widths), 1):
+        cell = ws_op.cell(row=1, column=col, value=h)
+        cell.font = header_font
+        cell.fill = header_fill_purple
+        cell.alignment = center
+        cell.border = thin_border
+        ws_op.column_dimensions[get_column_letter(col)].width = w
+    ws_op.row_dimensions[1].height = 25
+    ws_op.freeze_panes = "A2"
+
+    for i, n in enumerate(ncms_todos, start=2):
+        info = _operacao_para_ncm(n, overrides)
+        row_data = [
+            format_ncm(n),
+            info["pis_cofins"],
+            info["icms_situacao"],
+            info["operacao_codigo"],
+            info["operacao_rotulo"],
+            "Cadastro manual" if info["operacao_origem"] == "cadastro" else "Regra automática",
+            info["operacao_aviso"],
+        ]
+        for col, val in enumerate(row_data, 1):
+            cell = ws_op.cell(row=i, column=col, value=val)
+            cell.alignment = left
+            cell.border = thin_border
+            if i % 2 == 0:
+                cell.fill = alt_fill
 
     output = io.BytesIO()
     wb.save(output)

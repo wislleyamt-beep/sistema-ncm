@@ -42,3 +42,6 @@ htmlcov/
 # Arquivos temporários
 *.tmp
 *.bak
+
+# Cadastro local de operações (sem DATABASE_URL)
+data/

@@ -113,6 +113,7 @@ function switchTab(tab) {
 
   if (tab === 'monofasicos' && allMonofasicos.length === 0) loadMonofasicos();
   if (tab === 'classtrib' && allClassTrib.length === 0) loadClassTrib();
+  if (tab === 'operacoes') loadCadastroOperacoes();
 }
 
 /* ============================================================
@@ -242,6 +243,9 @@ function renderResult(d) {
   } else {
     icmsAvisoEl.classList.add('hidden');
   }
+
+  // Operação Questor (Simples Nacional)
+  renderOperacaoQuestor(d.operacao_questor);
 
   // Seção CST-IBS/CBS e cClassTrib
   renderClassTribSection(d.classtrib_sugestao);
@@ -882,7 +886,7 @@ function renderPdfReport(d) {
   const catClass = cat => 'cat-badge cat-' + cat.replace(/\s*e\s*/g, 'e').replace(/\s+/g, '');
   const monoTb = document.getElementById('rpt-mono-tbody');
   monoTb.innerHTML = d.monofasicos.length === 0
-    ? '<tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:20px">Nenhum NCM monofásico encontrado</td></tr>'
+    ? '<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:20px">Nenhum NCM monofásico encontrado</td></tr>'
     : d.monofasicos.map(m => `
         <tr>
           <td class="ncm-code">${m.ncm_formatado || formatNcmDisplay(m.ncm)}</td>
@@ -890,19 +894,21 @@ function renderPdfReport(d) {
           <td><span class="${catClass(m.categoria)}">${m.categoria}</span></td>
           <td style="font-size:.75rem;color:var(--gray-500)">${m.referencia}</td>
           <td style="font-size:.72rem;color:var(--gray-500);font-style:italic">${m.regra_identificacao || 'Monofásico por NCM específico'}</td>
+          <td>${_opqCellHtml(m)}</td>
         </tr>`).join('');
 
   // Tabela de não-monofásicos
   // nao_monofasicos agora é lista de {ncm, ncm_formatado}
   const naoTb = document.getElementById('rpt-nao-tbody');
   naoTb.innerHTML = d.nao_monofasicos.length === 0
-    ? '<tr><td colspan="2" style="text-align:center;color:var(--gray-400);padding:20px">Nenhum</td></tr>'
+    ? '<tr><td colspan="3" style="text-align:center;color:var(--gray-400);padding:20px">Nenhum</td></tr>'
     : d.nao_monofasicos.map(item => {
         const fmt = (typeof item === 'object') ? item.ncm_formatado : formatNcmDisplay(item);
         const raw = (typeof item === 'object') ? item.ncm : item;
         return `<tr>
           <td class="ncm-code">${fmt}</td>
           <td style="font-size:.82rem;color:var(--gray-500)">Não consta na lista de monofásicos</td>
+          <td>${(typeof item === 'object') ? _opqCellHtml(item) : ''}</td>
         </tr>`;
       }).join('');
 }
@@ -1216,3 +1222,188 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMonofasicos();
   }
 });
+
+
+/* ============================================================
+   Operação Questor — Simples Nacional
+   ============================================================ */
+let opqOperacoes = [];
+let opqCadastro = [];
+
+function _esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function _opqCellHtml(item) {
+  const src = item.operacao_origem === 'cadastro' ? 'cadastro manual' : 'regra automática';
+  const aviso = item.operacao_aviso ? ` title="${_esc(item.operacao_aviso)}"` : '';
+  return `<div class="opq-cell-op"${aviso}><strong>${_esc(item.operacao_codigo || '—')}</strong> · ${_esc(item.operacao_rotulo || '')}
+    <span class="opq-src">${src} · ICMS: ${_esc(item.icms_situacao || '')}${item.operacao_aviso ? ' · ⚠ ver aviso' : ''}</span></div>`;
+}
+
+function renderOperacaoQuestor(oq) {
+  const card = document.getElementById('opq-card');
+  if (!oq) { card.style.display = 'none'; return; }
+  card.style.display = '';
+  const op = oq.operacao;
+  const manual = oq.origem === 'cadastro';
+  card.classList.toggle('origem-cadastro', manual);
+
+  document.getElementById('opq-op').textContent = op ? `${op.operacao} - ${op.descricao}` : 'Definir manualmente';
+  document.getElementById('opq-code').textContent = op ? op.codigo : '—';
+
+  let origem;
+  if (manual) {
+    const m = oq.manual;
+    origem = `✅ Cadastro manual (NCM ${_esc(m.ncm_cadastrado)})` +
+      (m.observacao ? ` · ${_esc(m.observacao)}` : '') +
+      (m.atualizado_em ? ` · ${_esc(m.atualizado_em)}` : '');
+  } else {
+    const conf = {alta: 'confiança alta', media: 'confiança média', baixa: 'confiança baixa: confira'}[oq.confianca] || '';
+    origem = `🤖 Regra automática (${conf})`;
+  }
+  document.getElementById('opq-origem').innerHTML = origem;
+
+  document.getElementById('opq-pc').textContent = oq.pis_cofins_label;
+  document.getElementById('opq-icms').textContent = oq.icms_label;
+  document.getElementById('opq-icms-legal').textContent = oq.icms_base_legal || '';
+
+  const avisos = [...(oq.avisos || [])];
+  if (oq.divergencia) avisos.unshift(oq.divergencia);
+  document.getElementById('opq-avisos').innerHTML = avisos.map(a =>
+    `<div class="icms-aviso"><span style="font-size:1.1rem;line-height:1.2">⚠</span><span>${_esc(a)}</span></div>`
+  ).join('');
+}
+
+async function abrirCadastroComNcm() {
+  const ncm = currentNcmData?.ncm_formatado || '';
+  switchTab('operacoes');
+  await loadCadastroOperacoes();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('opq-f-ncm').value = ncm;
+  const codigo = currentNcmData?.operacao_questor?.operacao?.codigo;
+  if (codigo) document.getElementById('opq-f-op').value = codigo;
+  document.getElementById('opq-f-op').focus();
+}
+
+function _adminHeaders() {
+  let token = '';
+  try { token = localStorage.getItem('opq_admin_token') || ''; } catch (e) {}
+  return { 'Content-Type': 'application/json', 'X-Admin-Token': token };
+}
+
+async function _opqFetchWrite(url, options) {
+  let res = await fetch(url, { ...options, headers: _adminHeaders() });
+  if (res.status === 401) {
+    const t = prompt('Senha de administrador para alterar o cadastro:');
+    if (t === null) return res;
+    try { localStorage.setItem('opq_admin_token', t); } catch (e) {}
+    res = await fetch(url, { ...options, headers: { 'Content-Type': 'application/json', 'X-Admin-Token': t } });
+  }
+  return res;
+}
+
+async function loadCadastroOperacoes() {
+  try {
+    if (opqOperacoes.length === 0) {
+      opqOperacoes = await (await fetch('/api/operacoes-questor')).json();
+      const sel = document.getElementById('opq-f-op');
+      sel.innerHTML = '<option value="">Selecione a operação…</option>' + opqOperacoes.map(o =>
+        `<option value="${o.codigo}">${o.codigo} · ${_esc(o.operacao)} - ${_esc(o.descricao)}</option>`).join('');
+    }
+    const data = await (await fetch('/api/operacoes-ncm')).json();
+    opqCadastro = data.itens || [];
+    const aviso = document.getElementById('opq-persist-aviso');
+    if (!data.persistente) {
+      aviso.innerHTML = '<span style="font-size:1.1rem;line-height:1.2">⚠</span><span>O cadastro está sendo salvo em arquivo local do servidor. ' +
+        'No plano gratuito do Render ele é <strong>apagado a cada reinício ou deploy</strong>. Configure a variável <code>DATABASE_URL</code> ' +
+        '(Postgres gratuito do Neon ou Supabase) para guardar de forma permanente.</span>';
+      aviso.classList.remove('hidden');
+    } else {
+      aviso.classList.add('hidden');
+    }
+    renderCadastroOperacoes();
+  } catch (err) {
+    _opqMsg('Erro ao carregar cadastro: ' + err.message, true);
+  }
+}
+
+function renderCadastroOperacoes() {
+  const q = (document.getElementById('opq-search').value || '').toLowerCase().replace(/\./g, '');
+  const itens = opqCadastro.filter(i => !q ||
+    i.ncm.includes(q) || (i.descricao + i.observacao + i.operacao + i.codigo).toLowerCase().replace(/\./g, '').includes(q));
+  document.getElementById('opq-count-badge').textContent = `${opqCadastro.length} cadastrados`;
+  const tb = document.getElementById('opq-tbody');
+  if (itens.length === 0) {
+    tb.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:20px">Nenhum NCM cadastrado</td></tr>';
+    return;
+  }
+  tb.innerHTML = itens.map(i => {
+    const auto = i.automatica;
+    const diverge = auto && auto.codigo !== i.codigo;
+    const autoTxt = auto
+      ? `<span class="${diverge ? 'opq-divergente' : ''}">${diverge ? '⚠ ' : '✓ '}${_esc(auto.codigo)} · ${_esc(auto.operacao)}</span>`
+      : '<span style="color:var(--gray-400)">prefixo</span>';
+    return `<tr>
+      <td class="ncm-code">${_esc(i.ncm_formatado)}</td>
+      <td class="opq-cell-op"><strong>${_esc(i.codigo)}</strong> · ${_esc(i.operacao)} - ${_esc(i.descricao)}</td>
+      <td class="opq-cell-op">${autoTxt}</td>
+      <td style="font-size:.8rem">${_esc(i.observacao)}</td>
+      <td style="font-size:.75rem;color:var(--gray-500)">${_esc(i.atualizado_em)}</td>
+      <td><button class="opq-del" title="Excluir" onclick="excluirCadastroOperacao('${_esc(i.ncm)}')">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function _opqMsg(msg, erro) {
+  const el = document.getElementById('opq-f-msg');
+  el.className = erro ? 'error-msg' : 'ok-msg';
+  el.innerHTML = msg;
+  el.classList.remove('hidden');
+}
+
+async function _enviarCadastro(itens) {
+  const res = await _opqFetchWrite('/api/operacoes-ncm', { method: 'POST', body: JSON.stringify({ itens }) });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok && !data.salvos) {
+    _opqMsg(_esc(data.error || (data.erros || []).join('<br>') || 'Erro ao salvar'), true);
+    return false;
+  }
+  let msg = `${data.salvos} registro(s) salvo(s).`;
+  if (data.erros && data.erros.length) msg += '<br>' + data.erros.map(_esc).join('<br>');
+  _opqMsg(msg, !!(data.erros && data.erros.length));
+  await loadCadastroOperacoes();
+  return true;
+}
+
+async function salvarCadastroOperacao() {
+  const ncm = document.getElementById('opq-f-ncm').value;
+  const codigo = document.getElementById('opq-f-op').value;
+  const observacao = document.getElementById('opq-f-obs').value;
+  if (!codigo) { _opqMsg('Selecione a operação.', true); return; }
+  if (await _enviarCadastro([{ ncm, codigo, observacao }])) {
+    document.getElementById('opq-f-ncm').value = '';
+    document.getElementById('opq-f-obs').value = '';
+  }
+}
+
+async function salvarLoteOperacoes() {
+  const linhas = document.getElementById('opq-lote-txt').value.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const itens = linhas.map(l => {
+    const [ncm, codigo, ...obs] = l.split(/[;\t]/);
+    return { ncm: (ncm || '').trim(), codigo: (codigo || '').trim(), observacao: obs.join(';').trim() };
+  });
+  if (!itens.length) { _opqMsg('Cole ao menos uma linha.', true); return; }
+  if (await _enviarCadastro(itens)) document.getElementById('opq-lote-txt').value = '';
+}
+
+async function excluirCadastroOperacao(ncm) {
+  const res = await _opqFetchWrite('/api/operacoes-ncm/' + encodeURIComponent(ncm), { method: 'DELETE' });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    _opqMsg(_esc(data.error || 'Erro ao excluir'), true);
+    return;
+  }
+  _opqMsg(`NCM ${_esc(ncm)} removido do cadastro.`, false);
+  await loadCadastroOperacoes();
+}

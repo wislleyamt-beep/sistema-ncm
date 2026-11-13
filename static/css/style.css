@@ -1384,3 +1384,51 @@ body {
 @media (max-width: 760px) {
   .opq-form { grid-template-columns: 1fr; }
 }
+
+/* ============================================================
+   Serviços NFS-e
+   ============================================================ */
+.svc-fonte { font-size: .8rem; color: var(--gray-400); margin-top: 10px; }
+.svc-lista { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.svc-item {
+  display: flex; gap: 14px; align-items: flex-start; text-align: left; width: 100%;
+  background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius);
+  padding: 10px 14px; cursor: pointer; font: inherit; color: inherit; transition: border-color .15s, background .15s;
+}
+.svc-item:hover { border-color: var(--blue-lt); background: var(--blue-bg); }
+.svc-item-cod { font-weight: 700; color: var(--blue); font-size: 1.05rem; min-width: 54px; font-family: Consolas, monospace; }
+.svc-item-desc { font-weight: 600; color: var(--gray-900); }
+.svc-item-meta { font-size: .82rem; color: var(--gray-600); margin-top: 3px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.svc-badge { display: inline-block; font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.svc-badge-green { background: var(--green-bg); color: var(--green); }
+.svc-badge-orange { background: var(--orange-bg); color: var(--orange); }
+.svc-badge-purple { background: var(--purple-bg); color: var(--purple); }
+.svc-badge-red { background: var(--red-bg); color: var(--red); }
+.svc-cnae-head { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 8px; }
+.svc-subtitle { font-weight: 700; color: var(--gray-700); margin: 18px 0 8px; font-size: .9rem; }
+.svc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.svc-chip { background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 999px; padding: 4px 10px; font-size: .78rem; cursor: pointer; color: var(--gray-700); font-family: inherit; }
+.svc-chip:hover { background: var(--blue-bg); border-color: var(--blue-lt); }
+.svc-chip-static { cursor: default; }
+.svc-chip-static:hover { background: var(--gray-100); border-color: var(--gray-200); }
+.svc-campos { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; margin-top: 6px; }
+.svc-campo { border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 10px 12px; background: var(--gray-50); }
+.svc-campo-lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: var(--gray-400); font-weight: 700; margin-bottom: 4px; }
+.svc-campo-val { color: var(--gray-900); line-height: 1.45; }
+.svc-mini { font-size: .8rem; color: var(--gray-600); }
+.svc-copy { font-family: Consolas, monospace; font-weight: 700; color: var(--blue); cursor: copy; border-bottom: 1px dashed var(--gray-300); }
+.svc-copy.ok { color: var(--green-lt); border-bottom-color: var(--green-lt); }
+.svc-copy.ok::after { content: ' copiado'; font-family: inherit; font-weight: 400; font-size: .75rem; }
+.svc-avisos { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+.svc-nbs-table tbody tr { cursor: pointer; }
+.data-table tbody tr.svc-sel, .data-table tbody tr.svc-sel:nth-child(even) { background: var(--blue-bg); box-shadow: inset 3px 0 0 var(--blue-lt); }
+.mono { font-family: Consolas, monospace; white-space: nowrap; }
+.fr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; align-items: end; margin-top: 10px; }
+.fr-grid label { display: flex; flex-direction: column; gap: 4px; font-size: .82rem; font-weight: 600; color: var(--gray-600); }
+.fr-res { display: flex; gap: 16px; align-items: center; border-radius: var(--radius); padding: 12px 16px; margin-top: 14px; }
+.fr-ok { background: var(--green-bg); color: var(--green); }
+.fr-alerta { background: var(--orange-bg); color: var(--orange); }
+.fr-num { font-size: 1.8rem; font-weight: 800; min-width: 110px; }
+.svc-aviso { background: var(--orange-bg); border: 1px solid var(--orange-lt); color: var(--orange); border-radius: 8px; padding: 10px 14px; font-size: .84rem; line-height: 1.45; }
+.svc-warn { color: var(--orange); margin-top: 4px; }
+.fr-grid .search-input { padding: 11px 14px; }

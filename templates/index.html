@@ -24,11 +24,14 @@
         <button class="nav-btn" id="btn-tab-monofasicos" onclick="switchTab('monofasicos')">
           <span>📋</span> Produtos Monofásicos
         </button>
+        <button class="nav-btn" id="btn-tab-servicos" onclick="switchTab('servicos')">
+          <span>🧾</span> Serviços NFS-e
+        </button>
         <button class="nav-btn" id="btn-tab-classtrib" onclick="switchTab('classtrib')">
           <span>⚡</span> cClassTrib IBS/CBS
         </button>
         <button class="nav-btn" id="btn-tab-operacoes" onclick="switchTab('operacoes')">
-          <span>🧾</span> Operações Questor
+          <span>📦</span> Operações Questor
         </button>
       </nav>
     </div>
@@ -305,6 +308,55 @@
 
     </div><!-- /tab-consulta -->
 
+
+
+    <!-- ===== TAB: SERVIÇOS NFS-e ===== -->
+    <div id="tab-servicos" class="tab-panel hidden">
+
+      <div class="card search-section">
+        <h2 class="section-title">Classificação de serviços para a NFS-e Nacional</h2>
+        <p class="section-desc">Digite a atividade (ex.: <em>advogado</em>, <em>fisioterapia</em>, <em>tráfego pago</em>), o CNAE, o item da LC 116,
+          o código de tributação nacional ou a NBS. O sistema devolve todos os campos da nota: código de tributação, NBS, indicador da operação,
+          CST e cClassTrib do IBS/CBS, anexo do Simples e se a atividade está sujeita ao fator R.</p>
+        <div class="search-row">
+          <input id="svc-input" class="search-input" type="text" placeholder="Ex: advogado · 6911-7/01 · 17.14 · 171401 · 1.1301.10.00"
+            onkeydown="if(event.key==='Enter') buscarServico()" />
+          <button class="btn-primary" onclick="buscarServico()"><span class="btn-icon">🔍</span> Classificar</button>
+        </div>
+        <div id="svc-erro" class="error-msg hidden"></div>
+        <div class="svc-fonte" id="svc-fonte"></div>
+      </div>
+
+      <div id="svc-resultados" class="card hidden">
+        <div class="card-title-row">
+          <h3 class="card-title" id="svc-res-titulo">Resultados</h3>
+          <span class="card-badge" id="svc-res-count"></span>
+        </div>
+        <div id="svc-cnae-info"></div>
+        <div id="svc-lista" class="svc-lista"></div>
+        <div id="svc-cnaes-rel"></div>
+      </div>
+
+      <div id="svc-detalhe" class="hidden"></div>
+
+      <!-- Calculadora do fator R -->
+      <div class="card" id="svc-fator-r-card">
+        <div class="card-title-row">
+          <h3 class="card-title">Calculadora do fator R</h3>
+          <span class="card-badge">LC 123/2006, art. 18, §§ 5º-J e 5º-M</span>
+        </div>
+        <p class="section-desc">Fator R = folha de salários dos últimos 12 meses (salários, pró-labore, CPP e FGTS) ÷ receita bruta dos últimos 12 meses.
+          Com 28% ou mais, a atividade sujeita ao fator R é tributada pelo Anexo III; abaixo disso, pelo Anexo V.</p>
+        <div class="fr-grid">
+          <label>Folha dos últimos 12 meses (R$)<input id="fr-folha" class="search-input" type="text" placeholder="Ex: 84.000,00" /></label>
+          <label>Receita bruta dos últimos 12 meses, RBT12 (R$)<input id="fr-rbt12" class="search-input" type="text" placeholder="Ex: 300.000,00" /></label>
+          <label>Receita do mês (opcional, para estimar o DAS)<input id="fr-mes" class="search-input" type="text" placeholder="Ex: 25.000,00" /></label>
+          <button class="btn-primary" onclick="calcularFatorR()">Calcular</button>
+        </div>
+        <div id="fr-resultado"></div>
+      </div>
+
+    </div><!-- /tab-servicos -->
 
     <!-- ===== TAB: MONOFÁSICOS ===== -->
     <div id="tab-monofasicos" class="tab-panel hidden">

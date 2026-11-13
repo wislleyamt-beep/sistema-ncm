@@ -114,6 +114,7 @@ function switchTab(tab) {
   if (tab === 'monofasicos' && allMonofasicos.length === 0) loadMonofasicos();
   if (tab === 'classtrib' && allClassTrib.length === 0) loadClassTrib();
   if (tab === 'operacoes') loadCadastroOperacoes();
+  if (tab === 'servicos') loadServicosInfo();
 }
 
 /* ============================================================
@@ -1406,4 +1407,220 @@ async function excluirCadastroOperacao(ncm) {
   }
   _opqMsg(`NCM ${_esc(ncm)} removido do cadastro.`, false);
   await loadCadastroOperacoes();
+}
+
+
+/* ============================================================
+   Serviços NFS-e Nacional
+   ============================================================ */
+let svcDetalheAtual = null;
+let svcNbsSel = 0;
+let svcInfoCarregada = false;
+
+const _fmtBRL = v => (v ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const _fmtPct = v => ((v ?? 0) * 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
+
+async function loadServicosInfo() {
+  if (svcInfoCarregada) return;
+  try {
+    const r = await fetch('/api/servicos/info');
+    const d = await r.json();
+    document.getElementById('svc-fonte').innerHTML =
+      `Base: Anexo VIII da NFS-e v${_esc(d.versao_anexo_viii)} · ${d.itens} itens da LC 116 · ${d.nbs} correlações NBS · ${d.cnaes} CNAEs de serviço`;
+    svcInfoCarregada = true;
+  } catch (e) { /* silencioso */ }
+}
+
+function _svcBadgeSimples(simples) {
+  if (!simples) return '';
+  if (simples.impeditiva && simples.codigos.length === 1)
+    return '<span class="svc-badge svc-badge-red">Impeditiva ao Simples</span>';
+  const partes = [];
+  if (simples.fator_r) partes.push('<span class="svc-badge svc-badge-orange">Fator R · III ou V</span>');
+  simples.codigos.filter(c => !c.fator_r).forEach(c => {
+    const cls = c.codigo === 'IMP' ? 'svc-badge-red' : (c.anexo === 'IV' ? 'svc-badge-purple' : 'svc-badge-green');
+    const txt = c.codigo === 'IMP' ? 'Impeditiva (em parte)' : 'Anexo ' + c.anexo;
+    if (!partes.some(p => p.includes(txt))) partes.push(`<span class="svc-badge ${cls}">${_esc(txt)}</span>`);
+  });
+  return partes.join(' ');
+}
+
+async function buscarServico(qForcada) {
+  const input = document.getElementById('svc-input');
+  const q = (qForcada ?? input.value).trim();
+  if (qForcada) input.value = qForcada;
+  const err = document.getElementById('svc-erro');
+  err.classList.add('hidden');
+  if (!q) { err.textContent = 'Digite uma atividade, CNAE, item da LC 116 ou NBS.'; err.classList.remove('hidden'); return; }
+  const r = await fetch('/api/servicos/buscar?q=' + encodeURIComponent(q));
+  const d = await r.json();
+  const box = document.getElementById('svc-resultados');
+  const lista = document.getElementById('svc-lista');
+  const cnaeInfo = document.getElementById('svc-cnae-info');
+  const rel = document.getElementById('svc-cnaes-rel');
+  document.getElementById('svc-detalhe').classList.add('hidden');
+  box.classList.remove('hidden');
+  cnaeInfo.innerHTML = '';
+  rel.innerHTML = '';
+
+  if (d.tipo === 'cnae') {
+    cnaeInfo.innerHTML = `<div class="svc-cnae-head"><strong>CNAE ${_esc(d.cnae.cnae)}</strong> ${_esc(d.cnae.descricao || '')}</div>` +
+      (d.aviso ? `<div class="svc-aviso">${_esc(d.aviso)}</div>` : '') +
+      (d.itens.length > 1 ? '<p class="section-desc">Esse CNAE pode corresponder a mais de um item da LC 116. Escolha o serviço que a empresa presta de fato.</p>' : '');
+  }
+  document.getElementById('svc-res-titulo').textContent =
+    d.tipo === 'cnae' ? 'Itens da LC 116 para o CNAE' : d.tipo === 'nbs' ? 'Itens da LC 116 com essa NBS' : 'Serviços encontrados';
+  document.getElementById('svc-res-count').textContent = d.itens.length + (d.itens.length === 1 ? ' item' : ' itens');
+
+  if (!d.itens.length && !(d.cnaes || []).length) {
+    lista.innerHTML = d.aviso ? '' : '<p class="section-desc">Nada encontrado. Tente outra palavra (ex.: o nome do serviço em vez da profissão) ou o código CNAE.</p>';
+    return;
+  }
+  lista.innerHTML = d.itens.map(it => `
+    <button class="svc-item" onclick="abrirItemServico('${_esc(it.item)}')">
+      <div class="svc-item-cod">${_esc(it.item)}</div>
+      <div class="svc-item-body">
+        <div class="svc-item-desc">${_esc(it.descricao)}</div>
+        <div class="svc-item-meta">cTribNac ${_esc(it.ctribnac.join(', ') || '—')} · ${it.qtd_nbs} NBS ${_svcBadgeSimples(it.simples)}</div>
+      </div>
+    </button>`).join('');
+  if ((d.cnaes || []).length) {
+    rel.innerHTML = '<div class="svc-subtitle">CNAEs com esse termo</div><div class="svc-chips">' +
+      d.cnaes.map(c => `<button class="svc-chip" onclick="buscarServico('${_esc(c.cnae)}')" title="${_esc(c.descricao)}">${_esc(c.cnae)} · ${_esc(c.descricao.slice(0, 60))}</button>`).join('') + '</div>';
+  }
+  if (d.itens.length === 1) abrirItemServico(d.itens[0].item);
+}
+
+async function abrirItemServico(item) {
+  const r = await fetch('/api/servicos/item/' + encodeURIComponent(item));
+  if (!r.ok) return;
+  svcDetalheAtual = await r.json();
+  svcNbsSel = 0;
+  // pré-seleciona a NBS cuja descrição mais se parece com o que foi digitado
+  const norm = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const termos = norm(document.getElementById('svc-input').value).split(/\s+/).filter(t => t.length > 3 && !/\d/.test(t));
+  if (termos.length) {
+    let melhor = 0;
+    svcDetalheAtual.nbs.forEach((x, i) => {
+      const d = norm(x.descricao);
+      const pts = termos.filter(t => d.includes(t) || d.includes(t.slice(0, 5))).length;
+      if (pts > melhor) { melhor = pts; svcNbsSel = i; }
+    });
+  }
+  renderDetalheServico();
+  document.getElementById('svc-detalhe').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function selecionarNbs(i) { svcNbsSel = i; renderDetalheServico(); }
+
+function _copiavel(valor) {
+  if (!valor) return '—';
+  return `<span class="svc-copy" title="Clique para copiar" onclick="navigator.clipboard.writeText('${_esc(valor)}');this.classList.add('ok');setTimeout(()=>this.classList.remove('ok'),900)">${_esc(valor)}</span>`;
+}
+
+function renderDetalheServico() {
+  const d = svcDetalheAtual;
+  const n = d.nbs[svcNbsSel] || {};
+  const el = document.getElementById('svc-detalhe');
+  el.classList.remove('hidden');
+
+  const ctrib = d.ctribnac.length > 1
+    ? d.ctribnac.map(c => `<div>${_copiavel(c.codigo)} <span class="svc-mini">${_esc(c.descricao)}</span></div>`).join('')
+    : _copiavel(d.ctribnac[0]?.codigo) + ` <span class="svc-mini">${_esc(d.ctribnac[0]?.descricao || '')}</span>`;
+
+  const sn = n.ativ_sn_info;
+  let snHtml = '—';
+  if (sn) {
+    snHtml = `<strong>${_esc(sn.rotulo)}</strong>` + (sn.codigo !== 'IMP' ? ` <span class="svc-mini">(cAtivSN ${_esc(sn.codigo)})</span>` : '');
+    if (n.ativ_sn_alternativos_info?.length)
+      snHtml += '<div class="svc-mini">Alternativa: ' + n.ativ_sn_alternativos_info.map(a => `${_esc(a.rotulo)} (cAtivSN ${_esc(a.codigo)})`).join('; ') + '</div>';
+  }
+  const alt = (n.cclasstrib_alternativos || []).length
+    ? '<div class="svc-mini">Outras possíveis: ' + n.cclasstrib_alternativos.map(a => `<strong>${_esc(a.codigo)}</strong> ${_esc(a.nome)}`).join(' · ') + '</div>' : '';
+  const indAlt = (n.indop_alternativos || []).length
+    ? '<div class="svc-mini">Conforme o local da prestação: ' + n.indop_alternativos.map(a => `<strong>${_esc(a.codigo)}</strong> ${_esc(a.descricao || a.local_ibs || '')}`).join(' · ') + '</div>' : '';
+  const semClass = !n.cclasstrib
+    ? '<div class="svc-mini svc-warn">O Anexo VIII deixou o cClassTrib em branco para esta NBS. Confira na aba cClassTrib se o serviço tem redução (ex.: saúde, Anexo III da LC 214/2025, cClassTrib 200029) ou se fica em 000001.</div>' : '';
+  const regra = n.indop_regra
+    ? `<div class="svc-mini">Adquirente no exterior: <strong>${_esc(n.indop_regra.exterior)}</strong> · operação não onerosa: <strong>${_esc(n.indop_regra.nao_onerosa)}</strong></div>` : '';
+
+  const avisos = [];
+  if (d.simples.fator_r) avisos.push('Atividade sujeita ao <strong>fator R</strong>: Anexo III se a folha dos 12 meses for 28% ou mais da receita; abaixo disso, Anexo V. Use a calculadora abaixo.');
+  if (d.simples.varia_por_nbs) avisos.push('O enquadramento no Simples <strong>muda conforme a NBS</strong> escolhida. Confira a coluna Simples na tabela.');
+  if (d.simples.impeditiva) avisos.push('Há NBS deste item marcada como <strong>atividade impeditiva</strong> ao Simples Nacional.');
+  if (d.iss.local_prestacao) avisos.push('ISS devido no <strong>local da prestação</strong> (LC 116/2003, art. 3º), e não no município do prestador.');
+  if (d.iss.retencao_tomador) avisos.push('Tomador pessoa jurídica é <strong>responsável pela retenção do ISS</strong> (LC 116/2003, art. 6º, § 2º, II). Confira também a lei do município.');
+  if (d.inss) avisos.push(`Sujeito à <strong>retenção de ${_esc(d.inss.aliquota)} de INSS</strong> quando prestado mediante cessão de mão de obra ou empreitada (${_esc(d.inss.base_legal)}). EFD-Reinf: ${_esc(d.inss.codigo_reinf || '—')}.`);
+  if ((n.cclasstrib || '').startsWith('2')) avisos.push(`cClassTrib ${_esc(n.cclasstrib)} traz <strong>redução de alíquota</strong> de IBS/CBS: ${_esc(n.nome_cclasstrib)}. Confirme se o serviço e o prestador cumprem as condições da LC 214/2025.`);
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title-row">
+        <h3 class="card-title">Item ${_esc(d.item)} · ${_esc(d.descricao)}</h3>
+        <span class="card-badge">${_svcBadgeSimples(d.simples)}</span>
+      </div>
+
+      <div class="svc-campos">
+        <div class="svc-campo"><div class="svc-campo-lbl">Código de tributação nacional (cTribNac)</div><div class="svc-campo-val">${ctrib}</div></div>
+        <div class="svc-campo"><div class="svc-campo-lbl">Item da LC 116</div><div class="svc-campo-val">${_copiavel(d.item)}</div></div>
+        <div class="svc-campo"><div class="svc-campo-lbl">NBS</div><div class="svc-campo-val">${_copiavel(n.nbs)} <span class="svc-mini">${_esc(n.descricao || '')}</span></div></div>
+        <div class="svc-campo"><div class="svc-campo-lbl">Indicador da operação (cIndOp)</div><div class="svc-campo-val">${_copiavel(n.indop)} <span class="svc-mini">${_esc(n.indop_desc || '')}</span>${indAlt}${regra}</div></div>
+        <div class="svc-campo"><div class="svc-campo-lbl">CST IBS/CBS</div><div class="svc-campo-val">${_copiavel(n.cst_ibs_cbs)}</div></div>
+        <div class="svc-campo"><div class="svc-campo-lbl">cClassTrib</div><div class="svc-campo-val">${_copiavel(n.cclasstrib)} <span class="svc-mini">${_esc(n.nome_cclasstrib || '')}</span>${alt}${semClass}</div></div>
+        <div class="svc-campo"><div class="svc-campo-lbl">Local de incidência do IBS/CBS</div><div class="svc-campo-val">${_esc(n.local_ibs || '—')}</div></div>
+        <div class="svc-campo"><div class="svc-campo-lbl">Simples Nacional (cAtivSN)</div><div class="svc-campo-val">${snHtml}</div></div>
+      </div>
+
+      ${avisos.length ? '<div class="svc-avisos">' + avisos.map(a => `<div class="svc-aviso">${a}</div>`).join('') + '</div>' : ''}
+
+      <div class="svc-subtitle">NBS deste item (${d.nbs.length}) · clique para preencher os campos acima</div>
+      <div class="table-wrapper">
+        <table class="data-table svc-nbs-table">
+          <thead><tr>${d.nbs.some(x => x.desdobro) ? '<th>cTribNac</th>' : ''}<th>NBS</th><th>Descrição</th><th>indOp</th><th>cClassTrib</th><th>Simples</th></tr></thead>
+          <tbody>${d.nbs.map((x, i) => `
+            <tr class="${i === svcNbsSel ? 'svc-sel' : ''}" onclick="selecionarNbs(${i})">
+              ${d.nbs.some(y => y.desdobro) ? `<td>${_esc(x.desdobro || '')}</td>` : ''}
+              <td class="mono">${_esc(x.nbs)}</td>
+              <td>${_esc(x.descricao)}</td>
+              <td class="mono">${_esc(x.indop || '')}${x.indop_alternativos.length ? ' / ' + x.indop_alternativos.map(a => _esc(a.codigo)).join(' / ') : ''}</td>
+              <td class="mono" title="${_esc(x.nome_cclasstrib)}">${_esc(x.cclasstrib || 'em branco')}${x.cclasstrib_alternativos.length ? ' +' + x.cclasstrib_alternativos.length : ''}</td>
+              <td>${x.ativ_sn_info ? _esc(x.ativ_sn_info.rotulo) : ''}</td>
+            </tr>`).join('')}</tbody>
+        </table>
+      </div>
+
+      ${d.cnaes.length ? `<div class="svc-subtitle">CNAEs ligados a este item</div><div class="svc-chips">` +
+        d.cnaes.slice(0, 24).map(c => `<span class="svc-chip svc-chip-static" title="${_esc(c.descricao)}">${_esc(c.cnae)} · ${_esc(c.descricao.slice(0, 70))}</span>`).join('') +
+        (d.cnaes.length > 24 ? `<span class="svc-chip svc-chip-static">+${d.cnaes.length - 24} CNAEs</span>` : '') + '</div>' : ''}
+
+      <p class="svc-fonte">Fonte: Anexo VIII da NFS-e Nacional v${_esc(d.versao_anexo_viii)} (correlação item × NBS × indOp × cClassTrib × atividade do Simples).
+        A ligação CNAE × LC 116 e a retenção de INSS vêm de tabela de referência de mercado: confira com a lei do seu município.</p>
+    </div>`;
+}
+
+async function calcularFatorR() {
+  const p = new URLSearchParams({
+    folha12: document.getElementById('fr-folha').value,
+    rbt12: document.getElementById('fr-rbt12').value,
+    receita_mes: document.getElementById('fr-mes').value,
+  });
+  const r = await fetch('/api/servicos/fator-r?' + p.toString());
+  const d = await r.json();
+  const el = document.getElementById('fr-resultado');
+  if (d.erro) { el.innerHTML = `<div class="error-msg">${_esc(d.erro)}</div>`; return; }
+  const ok = d.anexo === 'III';
+  const lin = (nome, x) => x.erro ? `<tr><td>${nome}</td><td colspan="3">${_esc(x.erro)}</td></tr>` :
+    `<tr class="${(nome.endsWith(d.anexo)) ? 'svc-sel' : ''}"><td>${nome}</td><td>${_fmtPct(x.aliquota_nominal)}</td><td>${_fmtBRL(x.parcela_deduzir)}</td><td><strong>${_fmtPct(x.aliquota_efetiva)}</strong></td></tr>`;
+  el.innerHTML = `
+    <div class="fr-res ${ok ? 'fr-ok' : 'fr-alerta'}">
+      <div class="fr-num">${_fmtPct(d.fator_r)}</div>
+      <div>Fator R ${ok ? 'igual ou acima' : 'abaixo'} de 28%: tributação pelo <strong>Anexo ${d.anexo}</strong>.
+        ${ok ? '' : `Para ir ao Anexo III, a folha dos 12 meses precisaria chegar a ${_fmtBRL(d.folha_minima_para_iii)} (faltam ${_fmtBRL(d.falta_folha_12m)}).`}
+        ${d.das_estimado != null ? `<br>DAS estimado do mês: <strong>${_fmtBRL(d.das_estimado)}</strong> (no outro anexo seria ${_fmtBRL(d.das_outro_anexo)}).` : ''}</div>
+    </div>
+    <table class="data-table" style="margin-top:10px">
+      <thead><tr><th>Anexo</th><th>Alíquota nominal</th><th>Parcela a deduzir</th><th>Alíquota efetiva</th></tr></thead>
+      <tbody>${lin('Anexo III', d.anexo_iii)}${lin('Anexo V', d.anexo_v)}</tbody>
+    </table>
+    <p class="svc-fonte">Estimativa sem considerar segregação de receitas, ISS fixo ou retenções. A partir de 2027 (Res. CGSN 190/2026), nos dois primeiros meses de atividade o fator R é fixado em 0,28.</p>`;
 }

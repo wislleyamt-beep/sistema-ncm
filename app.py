@@ -9,6 +9,7 @@ from openpyxl import load_workbook, Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 import operacoes_questor as opq
+import servicos as svc
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
@@ -1814,6 +1815,41 @@ def get_classtrib():
 @app.route('/api/cst-ibs-cbs')
 def get_cst_ibs_cbs():
     return jsonify(CST_IBS_CBS_DATA)
+
+
+# ---------------------------------------------------------------------------
+# Serviços (NFS-e Nacional): atividade/CNAE -> LC 116, cTribNac, NBS,
+# indOp, cClassTrib, anexo do Simples e fator R
+# ---------------------------------------------------------------------------
+@app.route('/api/servicos/info')
+def servicos_info():
+    return jsonify(svc.estatisticas())
+
+
+@app.route('/api/servicos/buscar')
+def servicos_buscar():
+    return jsonify(svc.buscar(request.args.get('q', '')))
+
+
+@app.route('/api/servicos/item/<path:item>')
+def servicos_item(item):
+    d = svc.detalhe_item(item)
+    if not d:
+        return jsonify({'erro': 'Item da LC 116 não encontrado no Anexo VIII.'}), 404
+    return jsonify(d)
+
+
+@app.route('/api/servicos/fator-r')
+def servicos_fator_r():
+    def num(nome):
+        v = (request.args.get(nome) or '').strip()
+        if ',' in v:  # formato brasileiro: 60.000,00
+            v = v.replace('.', '').replace(',', '.')
+        try:
+            return float(v) if v else None
+        except ValueError:
+            return None
+    return jsonify(svc.calcular_fator_r(num('folha12'), num('rbt12'), num('receita_mes')))
 
 
 # ---------------------------------------------------------------------------
